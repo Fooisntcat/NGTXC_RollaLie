@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class DiceRollScriptWithoutUsingFaceDetect : MonoBehaviour
+public class DiceRollScript : MonoBehaviour
 {
     public Transform[] diceFaces;
     public Rigidbody rb;

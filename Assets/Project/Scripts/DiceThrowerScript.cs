@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DiceThrowerScript : MonoBehaviour
 {
-    public DiceRollScriptWithoutUsingFaceDetect dice;
+    public DiceRollScript dice;
     public int amountOfDice = 2;
     public float throwForce = 5f;
     public float rollForce = 10f;
@@ -48,12 +48,12 @@ public class DiceThrowerScript : MonoBehaviour
     
     private void OnEnable()
     {
-        DiceRollScriptWithoutUsingFaceDetect.OnDiceResult += OnDiceFinished;
+        DiceRollScript.OnDiceResult += OnDiceFinished;
     }
 
     private void OnDisable()
     {
-        DiceRollScriptWithoutUsingFaceDetect.OnDiceResult -= OnDiceFinished;
+        DiceRollScript.OnDiceResult -= OnDiceFinished;
     }
 
     private void OnDiceFinished(int diceIndex, int result)
