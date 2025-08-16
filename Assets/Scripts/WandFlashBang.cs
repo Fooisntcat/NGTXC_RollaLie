@@ -18,6 +18,7 @@ public class WandFlashbang : MonoBehaviour
     private bool isGrabbed = false;
     private Vector3 grabOffset;
     private Quaternion grabRotationOffset;
+    public Transform wandLocation;
 
     void Start()
     {
@@ -29,12 +30,13 @@ public class WandFlashbang : MonoBehaviour
     {
         if (!TiltFive.Wand.IsTracked()) return;
 
-        Vector3 wandPos = TiltFive.Wand.GetPosition(ControllerIndex.Right);
-        Quaternion wandRot = TiltFive.Wand.GetRotation(ControllerIndex.Right);
+        Vector3 wandPos = wandLocation.position;
+        Quaternion wandRot = wandLocation.rotation;
         float trigger = TiltFive.Input.GetTrigger();
 
         // Grab logic
-        if (trigger > 0.8f && !isDragging)
+        // if (trigger > 0.8f && !isDragging)
+        if (trigger > 0.8f)
         {
             if (IsThisGrenadeBeingPointedAt(wandPos, wandRot))
             {
@@ -75,14 +77,16 @@ public class WandFlashbang : MonoBehaviour
         rb.isKinematic = false;
         
         // Calculate throw direction based on recent movement
-        Vector3 throwDir = (currentWandPos - (currentWandPos - grabOffset)).normalized;
+        // Vector3 throwDir = (currentWandPos - (currentWandPos - grabOffset)).normalized;
+        Vector3 throwDir = (currentWandPos - currentWandPos).normalized;
         rb.AddForce(throwDir * throwForce, ForceMode.Impulse);
     }
 
     private void SmoothFollow(Vector3 targetWandPos, Quaternion targetWandRot)
     {
         // Calculate target position with offset
-        Vector3 targetPos = targetWandPos - (targetWandRot * grabOffset);
+        // Vector3 targetPos = targetWandPos - (targetWandRot * grabOffset);
+        Vector3 targetPos = targetWandPos;
         Quaternion targetRot = targetWandRot * grabRotationOffset;
 
         // Smooth interpolation
@@ -94,8 +98,9 @@ public class WandFlashbang : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 rayDirection = wandRot * Vector3.forward;
-        
+
         if (Physics.Raycast(wandPos, rayDirection, out hit, grabDistance))
+        // if (Physics.SphereCast(wandPos, 50f, rayDirection, out hit, grabDistance))
         {
             return hit.collider.gameObject == this.gameObject;
         }

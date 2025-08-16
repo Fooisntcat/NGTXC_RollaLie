@@ -22,6 +22,7 @@ public class DiceThrowerScript : MonoBehaviour
         if (wandLocation != null)
         {
             transform.position = wandLocation.position;
+            transform.rotation = wandLocation.rotation;
         }
         if (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A) && !_hasStoppedRolling)
             {
