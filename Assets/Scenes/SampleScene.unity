@@ -529,10 +529,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dice: {fileID: 5716577611313425026, guid: 45e9fac22aec4db4b881c8ec23adc17d, type: 3}
   amountOfDice: 2
-  throwForce: 5
-  rollForce: 10
+  throwForce: 2
+  rollForce: 5
   _isRolling: 0
   _hasStoppedRolling: 0
+  wandLocation: {fileID: 1149145626}
 --- !u!1 &1149145622
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +547,7 @@ GameObject:
   - component: {fileID: 1149145624}
   - component: {fileID: 1149145623}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: WandLocation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -635,7 +636,7 @@ Transform:
   m_GameObject: {fileID: 1149145622}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.1116633, y: 6.9579663, z: -12.425522}
+  m_LocalPosition: {x: -3.34, y: 5.82, z: -2.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

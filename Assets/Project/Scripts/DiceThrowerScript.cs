@@ -12,29 +12,29 @@ public class DiceThrowerScript : MonoBehaviour
     private int _finishedDiceCount = 0;
     public bool _isRolling;
     public bool _hasStoppedRolling;
-    
-
+    public Transform wandLocation;
     private List<GameObject> _spawnedDice = new List<GameObject>();
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !_hasStoppedRolling)
+        if (wandLocation != null)
         {
-            foreach (var die in _spawnedDice)
-            {
-                Destroy(die);
-                Debug.Log("Destory Dice");
-            }
-
-            //await Task.Delay(1000);
-            RollDice();
+            transform.position = wandLocation.position;
         }
-        Debug.Log("DiceThrowerScript Update");
+        if (Input.GetKeyDown(KeyCode.Space) && !_hasStoppedRolling)
+            {
+                foreach (var die in _spawnedDice)
+                {
+                    Destroy(die);
+                }
+
+                //await Task.Delay(1000);
+                RollDice();
+            }
     }
 
     private async void RollDice()
     {
-        Debug.Log("Roll Dice in dice thrower");
         if (dice == null) return;
 
         for (int i = 0; i < amountOfDice; i++)
