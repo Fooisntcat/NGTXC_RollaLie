@@ -195,6 +195,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -233,6 +245,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_Name
@@ -343,6 +359,8 @@ MonoBehaviour:
   - {fileID: 4737499705556300902}
   - {fileID: 5749826208753885602}
   rb: {fileID: 0}
+  _hasStoppedRolling: 0
+  _isRolling: 0
 --- !u!4 &8943732200266902168 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
