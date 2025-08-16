@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TiltFive;
-using JetBrains.Annotations;
 
 public class WandFlashbang : MonoBehaviour
 {
@@ -9,49 +8,98 @@ public class WandFlashbang : MonoBehaviour
     public AudioSource bangSound, whiteNoise;
     public float flashDuration = 2f;
     public float throwForce = 10f;
+    public float grabDistance = 2f;
+    public float positionLerpSpeed = 20f;
+    public float rotationLerpSpeed = 15f;
 
     private Rigidbody rb;
     private bool isDragging = false;
-    private Vector3 dragStartPos;
     private bool hasFlashed = false;
+    private bool isGrabbed = false;
+    private Vector3 grabOffset;
+    private Quaternion grabRotationOffset;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true;
-
-        Debug.Log("Wand tracked? " + TiltFive.Wand.IsTracked());
     }
 
     void Update()
     {
-        // Use primary (right-hand) wand by default
         if (!TiltFive.Wand.IsTracked()) return;
 
         Vector3 wandPos = TiltFive.Wand.GetPosition(ControllerIndex.Right);
-        
+        Quaternion wandRot = TiltFive.Wand.GetRotation(ControllerIndex.Right);
         float trigger = TiltFive.Input.GetTrigger();
 
-        if (trigger > 0.8f)
+        // Grab logic
+        if (trigger > 0.8f && !isDragging)
         {
-            // Begin dragging
-            // isDragging = true;
-            // dragStartPos = wandPos;
-            rb.isKinematic = true;
-            transform.position = wandPos;
+            if (IsThisGrenadeBeingPointedAt(wandPos, wandRot))
+            {
+                StartGrab(wandPos, wandRot);
+            }
         }
-        else if (trigger < 0.2f)
+        // Release logic
+        else if (trigger < 0.2f && isDragging && isGrabbed)
         {
-            rb.isKinematic = false;
+            ReleaseGrenade(wandPos);
         }
-        // else if (trigger < 0.2f && isDragging)
-        // {
-        //     // Release and throw
-        //     Vector3 throwDir = (wandPos - dragStartPos).normalized;
-        //     rb.isKinematic = false;
-        //     rb.AddForce(throwDir * throwForce, ForceMode.Impulse);
-        //     isDragging = false;
-        // }
+
+        // Smooth follow when grabbed
+        if (isGrabbed)
+        {
+            SmoothFollow(wandPos, wandRot);
+        }
+    }
+
+    private void StartGrab(Vector3 wandPos, Quaternion wandRot)
+    {
+        isDragging = true;
+        isGrabbed = true;
+        
+        // Calculate initial offset
+        grabOffset = wandRot * (wandPos - transform.position);
+        grabRotationOffset = Quaternion.Inverse(wandRot) * transform.rotation;
+        
+        rb.isKinematic = true;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
+    private void ReleaseGrenade(Vector3 currentWandPos)
+    {
+        isDragging = false;
+        isGrabbed = false;
+        rb.isKinematic = false;
+        
+        // Calculate throw direction based on recent movement
+        Vector3 throwDir = (currentWandPos - (currentWandPos - grabOffset)).normalized;
+        rb.AddForce(throwDir * throwForce, ForceMode.Impulse);
+    }
+
+    private void SmoothFollow(Vector3 targetWandPos, Quaternion targetWandRot)
+    {
+        // Calculate target position with offset
+        Vector3 targetPos = targetWandPos - (targetWandRot * grabOffset);
+        Quaternion targetRot = targetWandRot * grabRotationOffset;
+
+        // Smooth interpolation
+        transform.position = Vector3.Lerp(transform.position, targetPos, positionLerpSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationLerpSpeed * Time.deltaTime);
+    }
+
+    private bool IsThisGrenadeBeingPointedAt(Vector3 wandPos, Quaternion wandRot)
+    {
+        RaycastHit hit;
+        Vector3 rayDirection = wandRot * Vector3.forward;
+        
+        if (Physics.Raycast(wandPos, rayDirection, out hit, grabDistance))
+        {
+            return hit.collider.gameObject == this.gameObject;
+        }
+        return false;
     }
 
     void OnCollisionEnter(Collision collision)
