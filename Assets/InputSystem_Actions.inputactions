@@ -55,7 +55,7 @@
                     "name": "Jump",
                     "type": "Button",
                     "id": "f1ba0d36-48eb-4cd5-b651-1c94a6531f70",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -223,17 +223,6 @@
                 },
                 {
                     "name": "",
-                    "id": "9615a541-16b1-4b02-9534-1926cb9ddab3",
-                    "path": "<WandDevice>/Stick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse;Gamepad;Touch;Joystick;XR",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "c1f7a91b-d0fd-4a62-997e-7fb9b69bf235",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -327,17 +316,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a095678d-672c-4e8a-9812-1851815eb955",
-                    "path": "<WandDevice>/A",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";XR",
                     "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
