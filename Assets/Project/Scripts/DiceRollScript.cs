@@ -10,7 +10,11 @@ public class DiceRollScript : MonoBehaviour
     private int _diceIndex = -1;
     public bool _hasStoppedRolling;
     private bool _delayFinished;
-    public bool _isRolling = false; // is this even working lmao?
+    // public bool diceThrower._isRolling = false; // is this even working lmao? (its not haha)
+    // public GameObject diceThrower;
+    // public diceThrower diceThrower;
+    private DiceThrowerScript diceThrower;
+    // public static int amountOfDice;
 
 
     public static UnityAction<int, int> OnDiceResult;
@@ -20,6 +24,7 @@ public class DiceRollScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         _delayFinished = false;
         _hasStoppedRolling = false;
+        diceThrower = FindFirstObjectByType<DiceThrowerScript>();
     }
 
     private void Update()
@@ -27,12 +32,19 @@ public class DiceRollScript : MonoBehaviour
         if (!_delayFinished) return;
         if (!_hasStoppedRolling && rb.angularVelocity == Vector3.zero)
         {
-            _isRolling = true; // lock rolling
+            diceThrower._isRolling = false; // lock rolling
             _hasStoppedRolling = true;
             GetNumberOnTopFace();
+            Debug.Log("Current dice index: " + _diceIndex);
         }
-        Debug.Log("dice stop rolling var: " + _hasStoppedRolling);
-        Debug.Log("_isRolling" + _isRolling);
+        // if (transform.position.y < -10f && diceThrower._isRolling) // Dice fell off the table
+        if (transform.position.y < -10f) // Dice fell off the table
+        {
+            Debug.Log("dice < -10f diceThrower._isRolling? " + diceThrower._isRolling);
+            diceThrower._isRolling = false;
+            Debug.Log("Dice fell off the table");
+            Destroy(gameObject);
+        }
     }
 
     [ContextMenu(itemName: "Get Top Face")]
@@ -54,7 +66,8 @@ public class DiceRollScript : MonoBehaviour
 
         OnDiceResult?.Invoke(_diceIndex, topFace + 1);
 
-        Debug.Log($"Dice Result: {topFace + 1}");
+        // Debug.Log($"Dice Result: {topFace + 1}");
+        PlayerTurn.Instance.AddPoint(topFace + 1);
 
     }
 
@@ -74,11 +87,13 @@ public class DiceRollScript : MonoBehaviour
         rb.AddTorque(new Vector3(randX, randY, randZ) * (rollForce + RandomVariance), ForceMode.Impulse);
 
         DelayResult();
+        //  _hasStoppedRolling = false;
+        // _delayFinished = true;
     }
 
+    // MUST HAVE DELAYRESULT (if not the CurrentPlayerTurn will turns to 3)
     private async void DelayResult()
     {
-        Debug.Log("Delay Result");
         await Task.Delay(1000);
         _hasStoppedRolling = false;
         _delayFinished = true;

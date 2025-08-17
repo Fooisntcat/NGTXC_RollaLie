@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Flashbang
   - Table
+  - P1Wand
+  - DiceThrower
   layers:
   - Default
   - TransparentFX
