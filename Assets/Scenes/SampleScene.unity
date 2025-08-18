@@ -1390,6 +1390,8 @@ MonoBehaviour:
   rollForce: 4
   _isRolling: 0
   wandLocation: {fileID: 1149145626}
+  nudgeForce: 7
+  nudgeCooldown: 2
 --- !u!114 &1012403962
 MonoBehaviour:
   m_ObjectHideFlags: 0
