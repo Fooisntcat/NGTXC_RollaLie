@@ -12,15 +12,16 @@ public class DiceThrowerScript : MonoBehaviour
     public int amountOfDice = 2;
     public float throwForce = 5f;
     public float rollForce = 10f;
-    private int _finishedDiceCount = 0;
+    public int _finishedDiceCount = 0;
     public bool _isRolling = false;
     // Wand vars
     public Transform wandLocation;
+    private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
 
     private void Update()
     {
-        Debug.Log("Dice is rolling: " + _isRolling);
+        // Debug.Log("Dice is rolling: " + _isRolling);
         if (wandLocation != null)
         {
             transform.position = wandLocation.position;
@@ -28,6 +29,7 @@ public class DiceThrowerScript : MonoBehaviour
         }
         if ((TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A) || UnityEngine.Input.GetKey("space")) && !_isRolling)
         {
+            _nextTurnTriggered = false;
             foreach (var die in _spawnedDice)
             {
                 Destroy(die);
@@ -50,7 +52,7 @@ public class DiceThrowerScript : MonoBehaviour
             newDice.RollDice(throwForce, rollForce, i);
             await Task.Yield();
         }
-            PlayerTurn.Instance.NextTurn();
+            // PlayerTurn.Instance.NextTurn();
     }
     
     private void OnEnable()
@@ -66,12 +68,16 @@ public class DiceThrowerScript : MonoBehaviour
     private void OnDiceFinished(int diceIndex, int result)
     {
         _finishedDiceCount++;
+        // Debug.Log($"Dice {diceIndex} finished with result: {result}. Total finished: {_finishedDiceCount}");
         if (_finishedDiceCount >= amountOfDice)
         {
             _isRolling = false; // unlock
-            _finishedDiceCount = 0;
             Debug.Log("All dice finished rolling!");
-            
+            // if (!_nextTurnTriggered && !_isRolling)
+            // {
+            //     _nextTurnTriggered = true;
+            // PlayerTurn.Instance.NextTurn();
+            // }
         }
     }
 

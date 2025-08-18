@@ -35,14 +35,14 @@ public class DiceRollScript : MonoBehaviour
             diceThrower._isRolling = false; // lock rolling
             _hasStoppedRolling = true;
             GetNumberOnTopFace();
-            Debug.Log("Current dice index: " + _diceIndex);
+            // Debug.Log("Current dice index: " + _diceIndex);
         }
         // if (transform.position.y < -10f && diceThrower._isRolling) // Dice fell off the table
         if (transform.position.y < -10f) // Dice fell off the table
         {
-            Debug.Log("dice < -10f diceThrower._isRolling? " + diceThrower._isRolling);
+            // Debug.Log("dice < -10f diceThrower._isRolling? " + diceThrower._isRolling);
             diceThrower._isRolling = false;
-            Debug.Log("Dice fell off the table");
+            // Debug.Log("Dice fell off the table");
             Destroy(gameObject);
         }
     }
