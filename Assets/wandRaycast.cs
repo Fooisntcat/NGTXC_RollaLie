@@ -147,8 +147,8 @@ public class WandRaycast : MonoBehaviour
 }
 */
 #endregion
-
-#region Using collision
+#region Using collision (press trigger then enter)
+/*
 using UnityEngine;
 using TiltFive; // don’t forget namespace
 
@@ -186,6 +186,55 @@ public class WandCollisionPickup : MonoBehaviour
 
         // Grab when trigger pressed while colliding with a flashbang
         if (other.CompareTag("Flashbang") && !isHolding && trigger > 0.8f)
+        {
+            objectToDrag = other.transform;
+            isHolding = true;
+
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null) rb.isKinematic = true;
+        }
+    }
+}
+*/
+#endregion
+#region Using collision (OnTriggerStay)
+using UnityEngine;
+using TiltFive; // don’t forget namespace
+
+public class WandCollisionPickup : MonoBehaviour
+{
+    private Transform objectToDrag;   // current flashbang being held
+    public Transform wandHoldPoint;   // empty child object on wand (where flashbang sticks)
+    private bool isHolding = false;
+
+    void Update()
+    {
+        float trigger = TiltFive.Input.GetTrigger();
+
+        // If holding, keep the flashbang stuck to wand
+        if (isHolding && objectToDrag != null)
+        {
+            objectToDrag.position = wandHoldPoint.position;
+            objectToDrag.rotation = wandHoldPoint.rotation;
+
+            // Release when trigger is let go
+            if (trigger < 0.2f)
+            {
+                Rigidbody rb = objectToDrag.GetComponent<Rigidbody>();
+                if (rb != null) rb.isKinematic = false;
+
+                objectToDrag = null;
+                isHolding = false;
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        float trigger = TiltFive.Input.GetTrigger();
+
+        // Grab only when touching AND trigger is pressed
+        if (!isHolding && trigger > 0.8f && other.CompareTag("Flashbang"))
         {
             objectToDrag = other.transform;
             isHolding = true;
