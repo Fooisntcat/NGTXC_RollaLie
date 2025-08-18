@@ -11,11 +11,15 @@ public class DiceThrowerScript : MonoBehaviour
     public int amountOfDice = 2;
     public float throwForce = 5f;
     public float rollForce = 10f;
-    private int _finishedDiceCount = 0;
+    public int _finishedDiceCount = 0;
     public bool _isRolling = false;
 
     // Wand vars
-    public Transform wandLocation;
+    public Transform wandLocation; // Wand location to throw dice from
+    public Transform P1WandLocation;
+    public Transform P2WandLocation;
+    private PlayerTurn playerTurn;
+    private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
 
     // Nudge Vars
@@ -24,30 +28,63 @@ public class DiceThrowerScript : MonoBehaviour
     public float nudgeCooldown = 0.1f; // prevent spamming force
     private float _lastNudgeTime = 0f;
 
+    void Awake()
+    {
+        playerTurn = FindFirstObjectByType<PlayerTurn>();
+    }
+
     private void Update()
     {
-        Debug.Log("Dice is rolling: " + _isRolling);
+        // Debug.Log("Dice is rolling: " + _isRolling);
 
-        if (wandLocation != null)
-        {
-            transform.position = wandLocation.position;
-            transform.rotation = wandLocation.rotation;
-        }
+        // if (P1WandLocation != null)
+        // {
+        //     transform.position = P1WandLocation.position;
+        //     transform.rotation = P1WandLocation.rotation;
+        // }
 
         // Roll Dice
-        if ((TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A) || UnityEngine.Input.GetKey("space")) && !_isRolling)
-{
-    foreach (var die in _spawnedDice)
+        if (playerTurn.CurrentPlayerTurn == 1 && P1WandLocation != null)
+        {
+            transform.position = P1WandLocation.position;
+            transform.rotation = P1WandLocation.rotation;
+        }
+        else if (playerTurn.CurrentPlayerTurn == 2 && P2WandLocation != null)
+        {
+            transform.position = P2WandLocation.position;
+            transform.rotation = P2WandLocation.rotation;
+        }
+
+        if (!_isRolling && playerTurn != null)
+        {
+            if (playerTurn.CurrentPlayerTurn == 1 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || UnityEngine.Input.GetKey("space")))
     {
-        Destroy(die);
-    }
+                _nextTurnTriggered = false;
+        foreach (var die in _spawnedDice)
+        {
+            Destroy(die);
+        }
     _spawnedDice.Clear(); // ✅ clear list so no dead dice stay around
 
-    RollDice();
-}
+            RollDice();
+    }
 
         // Handle Nudging via Joystick
         HandleNudge();
+
+            if (playerTurn.CurrentPlayerTurn == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || UnityEngine.Input.GetKey("up")))
+            {
+                _nextTurnTriggered = false;
+                foreach (var die in _spawnedDice)
+                {
+                    Destroy(die);
+                }
+
+                //await Task.Delay(1000);
+                RollDice();
+            }
+        }
+
     }
 
     private async void RollDice()
@@ -65,8 +102,7 @@ public class DiceThrowerScript : MonoBehaviour
 
             await Task.Yield();
         }
-
-        PlayerTurn.Instance.NextTurn();
+            // PlayerTurn.Instance.NextTurn();
     }
 
     private void OnEnable()
@@ -82,11 +118,10 @@ public class DiceThrowerScript : MonoBehaviour
     private void OnDiceFinished(int diceIndex, int result)
     {
         _finishedDiceCount++;
-
+        // Debug.Log($"Dice {diceIndex} finished with result: {result}. Total finished: {_finishedDiceCount}");
         if (_finishedDiceCount >= amountOfDice)
         {
             _isRolling = false; // unlock
-            _finishedDiceCount = 0;
             Debug.Log("All dice finished rolling!");
         }
     }

@@ -461,7 +461,7 @@ MonoBehaviour:
     level: 0
     TAG: TFI
   editorSettings:
-    selectedPlayer: 1
+    selectedPlayer: 2
     selectedPlayerSettingsPanel: 2
 --- !u!1 &7170837541398560733
 GameObject:

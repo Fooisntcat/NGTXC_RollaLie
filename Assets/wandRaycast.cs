@@ -1,4 +1,6 @@
-/*using UnityEngine;
+#region Raycast in game
+/* Raycast in game (very buggy)
+using UnityEngine;
 using TiltFive;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -80,7 +82,9 @@ public class WandLaser : MonoBehaviour
     }
 }
 */
-
+#endregion
+#region Raycast only scene preview
+/* Raycast Old Method (no ray in game)
 using UnityEngine;
 using TiltFive;
 
@@ -141,3 +145,55 @@ public class WandRaycast : MonoBehaviour
         }
     }
 }
+*/
+#endregion
+
+#region Using collision
+using UnityEngine;
+using TiltFive; // don’t forget namespace
+
+public class WandCollisionPickup : MonoBehaviour
+{
+    private Transform objectToDrag;   // current flashbang being held
+    public Transform wandHoldPoint;   // empty child object on wand (where flashbang sticks)
+    private bool isHolding = false;
+
+    void Update()
+    {
+        float trigger = TiltFive.Input.GetTrigger();
+
+        // If holding, keep the flashbang stuck to wand
+        if (isHolding && objectToDrag != null)
+        {
+            objectToDrag.position = wandHoldPoint.position;
+            objectToDrag.rotation = wandHoldPoint.rotation;
+
+            // Release when trigger is let go
+            if (trigger < 0.2f)
+            {
+                Rigidbody rb = objectToDrag.GetComponent<Rigidbody>();
+                if (rb != null) rb.isKinematic = false;
+
+                objectToDrag = null;
+                isHolding = false;
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        float trigger = TiltFive.Input.GetTrigger();
+
+        // Grab when trigger pressed while colliding with a flashbang
+        if (other.CompareTag("Flashbang") && !isHolding && trigger > 0.8f)
+        {
+            objectToDrag = other.transform;
+            isHolding = true;
+
+            Rigidbody rb = other.attachedRigidbody;
+            if (rb != null) rb.isKinematic = true;
+        }
+    }
+}
+
+#endregion

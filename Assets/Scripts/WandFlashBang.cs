@@ -28,6 +28,7 @@ public class WandFlashbang : MonoBehaviour
         rb.isKinematic = true;
     }
 
+    #region Wrongly put script (raycast should be in WandRaycast not in the Flashbang)
     /*
     void Update()
     {
@@ -171,6 +172,7 @@ public class WandFlashbang : MonoBehaviour
            return false;
        }
        */
+       #endregion
 
     private void OnCollisionEnter(Collision collision)
     {
