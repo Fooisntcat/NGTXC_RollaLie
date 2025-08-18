@@ -13,8 +13,11 @@ public class PlayerTurn : MonoBehaviour
     public int PlayerCount = 2;
     public int p1Score = 0;
     public int p2Score = 0;
-    public int p1Money = 0;
-    public int p2Money = 0;
+    public int p1Money = 100;
+    public int p2Money = 100;
+    public int p1MoneyDeduct = 0;
+    public int p2MoneyDeduct = 0;
+    public int MoneyPool = 0;
     public int roundWinner = 0;
     private DiceThrowerScript diceThrower;
 
@@ -63,10 +66,14 @@ public class PlayerTurn : MonoBehaviour
         }
         if (diceThrower._finishedDiceCount == 2)
         {
+            p1Money -= p1MoneyDeduct;
+            MoneyPool += p1MoneyDeduct;
             NextTurn();
         }
         if (diceThrower._finishedDiceCount >= 4)
         {
+            p2Money -= p2MoneyDeduct;
+            MoneyPool += p2MoneyDeduct;
             CheckForWinner();
             ResetScores();
             NextTurn();
@@ -80,12 +87,15 @@ public class PlayerTurn : MonoBehaviour
         if (p1Score > p2Score)
         {
             roundWinner = 1;
+            p1Money += MoneyPool;
             Debug.Log("Player 1 wins!");
         }
         else if (p2Score > p1Score)
         {
             roundWinner = 2;
-            Debug.Log("Player 2 wins!");        }
+            p2Money += MoneyPool;
+            Debug.Log("Player 2 wins!");
+        }
         else
         {
             roundWinner = 0; // It's a tie
@@ -97,6 +107,9 @@ public class PlayerTurn : MonoBehaviour
     {
         p1Score = 0;
         p2Score = 0;
+        p1MoneyDeduct = 0;
+        p2MoneyDeduct = 0;
+        MoneyPool = 0;
         diceThrower._finishedDiceCount = 0;
     }
 }
