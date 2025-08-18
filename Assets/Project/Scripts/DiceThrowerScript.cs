@@ -15,6 +15,7 @@ public class DiceThrowerScript : MonoBehaviour
     public bool _isRolling = false;
 
     // Wand vars
+    public Transform wandLocation; // Wand location to throw dice from
     public Transform P1WandLocation;
     public Transform P2WandLocation;
     private PlayerTurn playerTurn;
