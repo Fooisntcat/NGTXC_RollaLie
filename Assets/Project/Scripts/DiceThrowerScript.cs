@@ -15,29 +15,63 @@ public class DiceThrowerScript : MonoBehaviour
     public int _finishedDiceCount = 0;
     public bool _isRolling = false;
     // Wand vars
-    public Transform wandLocation;
+    public Transform P1WandLocation;
+    public Transform P2WandLocation;
+    private PlayerTurn playerTurn;
     private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
+
+    void Awake()
+    {
+        playerTurn = FindFirstObjectByType<PlayerTurn>();
+    }
 
     private void Update()
     {
         // Debug.Log("Dice is rolling: " + _isRolling);
-        if (wandLocation != null)
+        // if (P1WandLocation != null)
+        // {
+        //     transform.position = P1WandLocation.position;
+        //     transform.rotation = P1WandLocation.rotation;
+        // }
+        if (playerTurn.CurrentPlayerTurn == 1 && P1WandLocation != null)
         {
-            transform.position = wandLocation.position;
-            transform.rotation = wandLocation.rotation;
+            transform.position = P1WandLocation.position;
+            transform.rotation = P1WandLocation.rotation;
         }
-        if ((TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A) || UnityEngine.Input.GetKey("space")) && !_isRolling)
+        else if (playerTurn.CurrentPlayerTurn == 2 && P2WandLocation != null)
         {
-            _nextTurnTriggered = false;
-            foreach (var die in _spawnedDice)
+            transform.position = P2WandLocation.position;
+            transform.rotation = P2WandLocation.rotation;
+        }
+
+        if (!_isRolling && playerTurn != null)
+        {
+            if (playerTurn.CurrentPlayerTurn == 1 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || UnityEngine.Input.GetKey("space")))
             {
-                Destroy(die);
+                _nextTurnTriggered = false;
+                foreach (var die in _spawnedDice)
+                {
+                    Destroy(die);
+                }
+
+                //await Task.Delay(1000);
+                RollDice();
             }
 
-            //await Task.Delay(1000);
-            RollDice();
+            if (playerTurn.CurrentPlayerTurn == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || UnityEngine.Input.GetKey("up")))
+            {
+                _nextTurnTriggered = false;
+                foreach (var die in _spawnedDice)
+                {
+                    Destroy(die);
+                }
+
+                //await Task.Delay(1000);
+                RollDice();
+            }
         }
+
     }
 
     private async void RollDice()
