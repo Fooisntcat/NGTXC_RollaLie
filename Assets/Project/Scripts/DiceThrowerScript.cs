@@ -1,25 +1,31 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-// using Unity.VisualScripting;
 using UnityEngine;
 using TiltFive;
-// using UnityEngine.InputSystem;
 
 public class DiceThrowerScript : MonoBehaviour
 {
     public DiceRollScript dice;
+
     // Rolling Vars
     public int amountOfDice = 2;
     public float throwForce = 5f;
     public float rollForce = 10f;
     public int _finishedDiceCount = 0;
     public bool _isRolling = false;
+
     // Wand vars
     public Transform P1WandLocation;
     public Transform P2WandLocation;
     private PlayerTurn playerTurn;
     private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
+
+    // Nudge Vars
+    [Header("Nudge Settings")]
+    public float nudgeForce = 2f;    // strength of joystick push
+    public float nudgeCooldown = 0.1f; // prevent spamming force
+    private float _lastNudgeTime = 0f;
 
     void Awake()
     {
@@ -29,11 +35,14 @@ public class DiceThrowerScript : MonoBehaviour
     private void Update()
     {
         // Debug.Log("Dice is rolling: " + _isRolling);
+
         // if (P1WandLocation != null)
         // {
         //     transform.position = P1WandLocation.position;
         //     transform.rotation = P1WandLocation.rotation;
         // }
+
+        // Roll Dice
         if (playerTurn.CurrentPlayerTurn == 1 && P1WandLocation != null)
         {
             transform.position = P1WandLocation.position;
@@ -48,16 +57,19 @@ public class DiceThrowerScript : MonoBehaviour
         if (!_isRolling && playerTurn != null)
         {
             if (playerTurn.CurrentPlayerTurn == 1 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || UnityEngine.Input.GetKey("space")))
-            {
+    {
                 _nextTurnTriggered = false;
-                foreach (var die in _spawnedDice)
-                {
-                    Destroy(die);
-                }
+        foreach (var die in _spawnedDice)
+        {
+            Destroy(die);
+        }
+    _spawnedDice.Clear(); // ✅ clear list so no dead dice stay around
 
-                //await Task.Delay(1000);
-                RollDice();
-            }
+            RollDice();
+    }
+
+        // Handle Nudging via Joystick
+        HandleNudge();
 
             if (playerTurn.CurrentPlayerTurn == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || UnityEngine.Input.GetKey("up")))
             {
@@ -81,14 +93,17 @@ public class DiceThrowerScript : MonoBehaviour
         for (int i = 0; i < amountOfDice; i++)
         {
             _isRolling = true; // lock
+
             var newDice = Instantiate(dice, transform.position, transform.rotation);
             _spawnedDice.Add(newDice.gameObject);
+
             newDice.RollDice(throwForce, rollForce, i);
+
             await Task.Yield();
         }
             // PlayerTurn.Instance.NextTurn();
     }
-    
+
     private void OnEnable()
     {
         DiceRollScript.OnDiceResult += OnDiceFinished;
@@ -107,12 +122,36 @@ public class DiceThrowerScript : MonoBehaviour
         {
             _isRolling = false; // unlock
             Debug.Log("All dice finished rolling!");
-            // if (!_nextTurnTriggered && !_isRolling)
-            // {
-            //     _nextTurnTriggered = true;
-            // PlayerTurn.Instance.NextTurn();
-            // }
         }
     }
 
+private void HandleNudge()
+{
+    // Get joystick vector from Tilt Five wand (returns Vector2)
+    Vector2 stickInput = TiltFive.Input.GetStickTilt();
+
+    // Optional keyboard fallback for testing
+    float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
+    float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
+
+    // OLD: nudgeDirection was just world-based
+    // Vector3 nudgeDirection = new Vector3(x, 0, y);
+
+    // NEW: make it relative to wand’s forward direction
+    Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
+
+    if (nudgeDirection.magnitude > 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
+    {
+        foreach (var die in _spawnedDice)
+        {
+            Rigidbody rb = die.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.AddForce(nudgeDirection.normalized * nudgeForce, ForceMode.Impulse);
+            }
+        }
+
+        _lastNudgeTime = Time.time;
+    }
+}
 }
