@@ -198,6 +198,7 @@ public class WandCollisionPickup : MonoBehaviour
 */
 #endregion
 #region Using collision (OnTriggerStay)
+/*
 using UnityEngine;
 using TiltFive; // don’t forget namespace
 
@@ -244,5 +245,129 @@ public class WandCollisionPickup : MonoBehaviour
         }
     }
 }
+*/
+#endregion
+#region Using collision (rb.movement)
+/*
+using UnityEngine;
+using TiltFive;  // make sure this is included for PlayerIndex
 
+public class FlashbangGrab : MonoBehaviour
+{
+    private Transform objectToDrag;
+    private Rigidbody objectRb;
+    private bool isHolding = false;
+
+    [SerializeField] private Transform wandHoldPoint;
+    [SerializeField] private PlayerIndex playerIndex = PlayerIndex.One; // set in inspector for each wand
+
+    void FixedUpdate()
+    {
+        float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
+
+        if (isHolding && objectToDrag != null && objectRb != null)
+        {
+            // Follow wand with physics
+            objectRb.MovePosition(wandHoldPoint.position);
+            objectRb.MoveRotation(wandHoldPoint.rotation);
+
+            // Release when trigger is let go
+            if (trigger < 0.2f)
+            {
+                objectRb.isKinematic = false;
+
+                objectToDrag = null;
+                objectRb = null;
+                isHolding = false;
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right,playerIndex);
+
+        // Grab only when touching AND trigger is pressed
+        if (!isHolding && trigger > 0.8f && other.CompareTag("Flashbang"))
+        {
+            objectToDrag = other.transform;
+            objectRb = other.attachedRigidbody;
+
+            // if (objectRb != null)
+                // objectRb.isKinematic = true;
+
+            isHolding = true;
+        }
+    }
+}
+*/
+#endregion
+#region Using collision (rb.movement Fixed?)
+using UnityEngine;
+using TiltFive;
+
+public class FlashbangGrab : MonoBehaviour
+{
+    private Rigidbody objectRb;
+    private bool isHolding = false;
+    private PlayerTurn playerTurn;
+
+    [SerializeField] private Transform wandHoldPoint;
+    [SerializeField] private PlayerIndex playerIndex = PlayerIndex.One;
+    [SerializeField] private int price_flashbang = 20;
+
+    void Awake()
+    {
+        playerTurn = FindFirstObjectByType<PlayerTurn>();
+    }
+    void FixedUpdate()
+    {
+        float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
+
+        // objectRb.isKinematic = false; // allow physics again
+
+        if (isHolding && objectRb != null)
+        {
+            // Move with physics
+            objectRb.MovePosition(wandHoldPoint.position);
+            objectRb.MoveRotation(wandHoldPoint.rotation);
+
+            // Release when trigger is let go
+            if (trigger < 0.2f)
+            {
+                objectRb.useGravity = true;   // re-enable gravity
+                objectRb.isKinematic = false; // allow physics again
+                objectRb = null;
+                isHolding = false;
+            }
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
+
+        // Grab only when touching AND trigger is pressed
+        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.E)) && other.CompareTag("Flashbang"))
+        {
+            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            {
+                playerTurn.p1Money -= price_flashbang; // Deduct money for player 1
+            }
+            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+            {
+                playerTurn.p2Money -= price_flashbang; // Deduct money for player 2
+            }
+
+            objectRb = other.attachedRigidbody;
+
+            if (objectRb != null)
+            {
+                objectRb.useGravity = false;   // prevent falling while held
+            }
+
+            isHolding = true;
+        }
+    }
+}
 #endregion

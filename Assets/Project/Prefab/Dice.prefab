@@ -196,15 +196,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalScale.x
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalScale.y
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalScale.z
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}
       propertyPath: m_LocalPosition.x
@@ -360,7 +360,6 @@ MonoBehaviour:
   - {fileID: 5749826208753885602}
   rb: {fileID: 0}
   _hasStoppedRolling: 0
-  _isRolling: 0
 --- !u!4 &8943732200266902168 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7888ad53b31a02643b26cf46a97bc349, type: 3}

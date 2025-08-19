@@ -4,7 +4,9 @@ using TiltFive;
 
 public class WandFlashbang : MonoBehaviour
 {
-    public Image whiteScreen;
+    // public Image whiteScreen;
+    public GameObject flashbangScreen;
+    private Image whiteScreen;
     public AudioSource bangSound, whiteNoise;
     public float flashDuration = 2f;
     // public float throwForce = 10f;
@@ -25,7 +27,40 @@ public class WandFlashbang : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
+        // rb.isKinematic = true;
+        // flashbangImage.color = new Color(1, 1, 1, 1);
+        var canvas = Instantiate(flashbangScreen, Vector3.zero, Quaternion.identity);
+        whiteScreen = canvas.GetComponentInChildren<Image>();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // if (!hasFlashed && collision.gameObject.CompareTag("Table"))
+        if (collision.gameObject.CompareTag("Table"))
+        {
+            StartCoroutine(FlashEffect());
+            hasFlashed = true;
+            Destroy(gameObject, flashDuration + 1f); // Destroy after flash duration + 1 second
+        }
+    }
+
+    private System.Collections.IEnumerator FlashEffect()
+    {
+        bangSound.Play();
+        whiteNoise.Play();
+        // whiteScreen.color = Color.white;
+        whiteScreen.color = Color.white;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 1f;
+            // whiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
+            whiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
+            yield return null;
+        }
     }
 
     #region Wrongly put script (raycast should be in WandRaycast not in the Flashbang)
@@ -172,34 +207,7 @@ public class WandFlashbang : MonoBehaviour
            return false;
        }
        */
-       #endregion
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!hasFlashed && collision.gameObject.CompareTag("Table"))
-        {
-            StartCoroutine(FlashEffect());
-            hasFlashed = true;
-            Destroy(gameObject, flashDuration + 1f); // Destroy after flash duration + 1 second
-        }
-    }
-
-    private System.Collections.IEnumerator FlashEffect()
-    {
-        bangSound.Play();
-        whiteNoise.Play();
-        whiteScreen.color = Color.white;
-
-        yield return new WaitForSeconds(flashDuration);
-
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime / 1f;
-            whiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
-            yield return null;
-        }
-    }
+    #endregion
 
     /*private void OnTriggerEnter(Collider other)
     {

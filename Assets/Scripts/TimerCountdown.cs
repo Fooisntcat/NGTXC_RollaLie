@@ -7,7 +7,8 @@ namespace TimerCountdown
 {
     public class Timer : MonoBehaviour
     {
-        private Text timerText; // Reference to the UI Text component to display the timer
+        [SerializeField] private Text timerText; // Reference to the UI Text component to display the timer
+        public int timerDuration = 3;
         public float timeRemaining = 3;
         public bool timerIsRunning = false;
 
@@ -35,6 +36,13 @@ namespace TimerCountdown
                     timerIsRunning = false;
                 }
             }
+        }
+
+        public void ResetTimer()
+        {
+            timerIsRunning = true;
+            timeRemaining = 3;
+            Debug.Log("Timer reset to " + timeRemaining + " seconds.");
         }
     }
 }

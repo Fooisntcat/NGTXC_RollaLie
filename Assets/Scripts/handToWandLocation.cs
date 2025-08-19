@@ -22,7 +22,7 @@ public class handToWandLocation : MonoBehaviour
             // transform.position = wandLocation.position + wandLocation.forward * 0.5f; // 0.1 = 10cm forward
             transform.position = wandLocation.TransformPoint(new Vector3(-0.5f, 0.5f, -1.5f));
 
-            transform.rotation = wandLocation.rotation * Quaternion.Euler(-90f, 90f, 0f);
+            transform.rotation = wandLocation.rotation * Quaternion.Euler(-90f, 0f, 90f);
             // transform.rotation = wandLocation.rotation;
             Animator animator = GetComponent<Animator>();
             if (animator != null || UnityEngine.Input.GetKey("return"))

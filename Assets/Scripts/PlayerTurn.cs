@@ -10,6 +10,7 @@ public class PlayerTurn : MonoBehaviour
     public static PlayerTurn Instance { get; private set; }
     // Player-specific data
     public int CurrentPlayerTurn;
+    
     public int PlayerCount = 2;
     public int p1Score;
     public int p2Score;
@@ -20,6 +21,8 @@ public class PlayerTurn : MonoBehaviour
     public int MoneyPool;
     public int roundWinner;
     public int roundsPlayed;
+
+    // Script References
     private DiceThrowerScript diceThrower;
     private TimerCountdown.Timer timerCountdown;
 
@@ -39,10 +42,6 @@ public class PlayerTurn : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-
-    }
     public void NextTurn()
     {
         // Debug.Log("Next Turn Called");
@@ -132,5 +131,7 @@ public class PlayerTurn : MonoBehaviour
         p2MoneyDeduct += 3;
         MoneyPool = 0;
         diceThrower._finishedDiceCount = 0;
+        diceThrower.ResetRound();
     }
 }
+

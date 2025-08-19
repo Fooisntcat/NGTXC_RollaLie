@@ -2,10 +2,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using TiltFive;
+using TimerCountdown;
+using UnityEngine.XR;
 
 public class DiceThrowerScript : MonoBehaviour
 {
+    #region Variables
+    [Header("Dice Settings")]
     public DiceRollScript dice;
+    private TimerCountdown.Timer timerCountdown;
+
+    // Players
+    private bool p1RolledDice = false;
+    private bool p2RolledDice = false;
 
     // Rolling Vars
     public int amountOfDice = 2;
@@ -22,15 +31,24 @@ public class DiceThrowerScript : MonoBehaviour
     private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
 
+    // Cheating Manager
+    private Queue<(int playerId, bool cheated)> cheatLog = new Queue<(int, bool)>();
+    private PlayerTurn playerTurnScript;
+    private HashSet<int> playersLogged = new HashSet<int>();
+
     // Nudge Vars
     [Header("Nudge Settings")]
     public float nudgeForce = 2f;    // strength of joystick push
     public float nudgeCooldown = 0.1f; // prevent spamming force
     private float _lastNudgeTime = 0f;
 
+    #endregion
+
     void Awake()
     {
         playerTurn = FindFirstObjectByType<PlayerTurn>();
+        timerCountdown = FindFirstObjectByType<TimerCountdown.Timer>();
+        playerTurnScript = FindFirstObjectByType<PlayerTurn>();
     }
 
     private void Update()
@@ -43,7 +61,7 @@ public class DiceThrowerScript : MonoBehaviour
         //     transform.rotation = P1WandLocation.rotation;
         // }
 
-        // Roll Dice
+        // Dice Throw Position
         if (playerTurn.CurrentPlayerTurn == 1 && P1WandLocation != null)
         {
             transform.position = P1WandLocation.position;
@@ -55,11 +73,14 @@ public class DiceThrowerScript : MonoBehaviour
             transform.rotation = P2WandLocation.rotation;
         }
 
-        if (!_isRolling && playerTurn != null)
+        // Makes sure the dice stops rolling, the currentPlayerTurn gets to roll
+        if (!_isRolling && playerTurn != null && timerCountdown.timeRemaining == 0)
         {
             if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
             {
+                p1RolledDice = true;
                 _isRolling = true; // lock rolling
+                timerCountdown.ResetTimer();
                 // _finishedDiceCount = 0;
                 // playerTurn.p1Score = 0;
                 _nextTurnTriggered = false;
@@ -74,7 +95,9 @@ public class DiceThrowerScript : MonoBehaviour
 
             if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.W))))
             {
+                p2RolledDice = true;
                 _isRolling = true; // lock rolling
+                timerCountdown.ResetTimer();
                 // playerTurn.p2Score = 0;
                 _nextTurnTriggered = false;
                 foreach (var die in _spawnedDice)
@@ -85,8 +108,11 @@ public class DiceThrowerScript : MonoBehaviour
                 //await Task.Delay(1000);
                 RollDice();
             }
+        }
 
-            // Handle Nudging via Joystick
+        // Handle Nudge
+        if (timerCountdown != null && timerCountdown.timeRemaining > 0)
+        {
             HandleNudge();
         }
     }
@@ -125,44 +151,42 @@ public class DiceThrowerScript : MonoBehaviour
         // Debug.Log($"Dice {diceIndex} finished with result: {result}. Total finished: {_finishedDiceCount}");
         if (_finishedDiceCount >= amountOfDice)
         {
-            _isRolling = false; // unlock
+            _isRolling = false; // 
             Debug.Log("All dice finished rolling!");
         }
     }
 
-/*
-    private void HandleNudge()
-    {
-        if (dice == null) return;
-        // Get joystick vector from Tilt Five wand (returns Vector2)
-        Vector2 stickInput = TiltFive.Input.GetStickTilt();
-
-        // Optional keyboard fallback for testing
-        float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
-        float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
-
-        // OLD: nudgeDirection was just world-based
-        // Vector3 nudgeDirection = new Vector3(x, 0, y);
-
-        // NEW: make it relative to wand’s forward direction
-        Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
-
-        if (nudgeDirection.magnitude > 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
+    /* private void HandleNudge()
         {
-            foreach (var die in _spawnedDice)
-            {
-                Rigidbody rb = die.GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    rb.AddForce(nudgeDirection.normalized * nudgeForce, ForceMode.Impulse);
-                }
-            }
+            if (dice == null) return;
+            // Get joystick vector from Tilt Five wand (returns Vector2)
+            Vector2 stickInput = TiltFive.Input.GetStickTilt();
 
-            _lastNudgeTime = Time.time;
+            // Optional keyboard fallback for testing
+            float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
+            float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
+
+            // OLD: nudgeDirection was just world-based
+            // Vector3 nudgeDirection = new Vector3(x, 0, y);
+
+            // NEW: make it relative to wand’s forward direction
+            Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
+
+            if (nudgeDirection.magnitude > 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
+            {
+                foreach (var die in _spawnedDice)
+                {
+                    Rigidbody rb = die.GetComponent<Rigidbody>();
+                    if (rb != null)
+                    {
+                        rb.AddForce(nudgeDirection.normalized * nudgeForce, ForceMode.Impulse);
+                    }
+                }
+
+                _lastNudgeTime = Time.time;
+            }
         }
-    }
-    */
-    
+        */
     private void HandleNudge()
     {
         if (dice == null) return;
@@ -170,24 +194,58 @@ public class DiceThrowerScript : MonoBehaviour
         // Pick correct wand based on player turn
         Transform wandLocation = null;
         // if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1)
-            wandLocation = P1WandLocation;
+        // wandLocation = P1WandLocation;
         // else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2)
-            // wandLocation = P2WandLocation;
-
-        if (wandLocation == null) return;
+        // wandLocation = P2WandLocation;
 
         // Get joystick vector from Tilt Five wand
         Vector2 stickInput = TiltFive.Input.GetStickTilt();
 
+        if (playerTurn != null && timerCountdown.timeRemaining >= 0)
+        {
+            if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && p1RolledDice)
+            {
+                wandLocation = P1WandLocation;
+                stickInput = TiltFive.Input.GetStickTilt(ControllerIndex.Right, PlayerIndex.One);
+            }
+            else if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && p2RolledDice)
+            {
+                wandLocation = P2WandLocation;
+                stickInput = TiltFive.Input.GetStickTilt(ControllerIndex.Right, PlayerIndex.Two);
+            }
+            else
+            {
+                wandLocation = null;
+                stickInput = Vector2.zero;
+            }
+        }
+
+        if (wandLocation == null) return;
+
+        // Optional keyboard fallback
+        // float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
+        // float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
+
+        // Make it relative to wand’s forward direction
+        // Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
+        
         // Optional keyboard fallback
         float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
         float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
-
         // Make it relative to wand’s forward direction
         Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
 
         if (nudgeDirection.magnitude > 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
         {
+            if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && p1RolledDice && timerCountdown.timeRemaining >= 0)
+            {
+                AddCheat(1, true); // Player 1 nudged
+            }
+            else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && p2RolledDice && timerCountdown.timeRemaining >= 0)
+            {
+                AddCheat(2, true); // Player 2 nudged
+            }
+
             foreach (var die in _spawnedDice)
             {
                 if (die == null) continue;
@@ -201,6 +259,71 @@ public class DiceThrowerScript : MonoBehaviour
 
             _lastNudgeTime = Time.time;
         }
+        else if (nudgeDirection.magnitude < 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
+        {
+            AddCheat(playerTurn.CurrentPlayerTurn, false);
+        }
     }
-    
+    public void AddCheat(int playerId, bool cheated)
+    {
+        var tempList = new List<(int playerId, bool cheated)>(cheatLog);
+
+        for (int i = 0; i < tempList.Count; i++)
+        {
+            if (tempList[i].playerId == playerId)
+            {
+                // Already exists
+                if (cheated && tempList[i].cheated == false)
+                {
+                    // Upgrade false -> true
+                    tempList[i] = (playerId, true);
+                    cheatLog = new Queue<(int, bool)>(tempList);
+                    Debug.Log($"Player {playerId} upgraded from false to true");
+                }
+                else
+                {
+                    // Otherwise ignore
+                    Debug.Log($"Player {playerId} already logged as {tempList[i].cheated}, no change");
+                }
+                return;
+            }
+        }
+
+        // If not logged yet, add new
+        cheatLog.Enqueue((playerId, cheated));
+        if (cheatLog.Count > playerTurn.PlayerCount)
+            cheatLog.Dequeue();
+
+        playersLogged.Add(playerId);
+        Debug.Log($"Player {playerId} logged new entry: {cheated}");
+        DebugLogCheatLog();
+    }
+
+    private void DebugLogCheatLog()
+    {
+        string log = "Current CheatLog: ";
+        foreach (var entry in cheatLog)
+        {
+            log += $"[P{entry.playerId}, cheat={entry.cheated}] ";
+        }
+        Debug.Log(log);
+    }
+
+    public void ResetRound() // Called from PlayerTurn.cs (ResetScores())
+    {
+        playersLogged.Clear();
+        p1RolledDice = false;
+        p2RolledDice = false;
+        cheatLog.Clear();
+        Debug.Log("New round started — all players can log again!");
+    }
+    public bool? GetLatestCheat(int playerId)
+    {
+    foreach (var entry in cheatLog)
+    {
+        if (entry.playerId == playerId)
+            return entry.cheated;
+    }
+    return null; // not found
+    }
 }
