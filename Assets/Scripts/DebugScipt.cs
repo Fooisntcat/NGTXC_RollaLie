@@ -20,6 +20,6 @@ public class DebugScipt : MonoBehaviour
     {
         
         bool rolling = diceThrower._isRolling;
-        debugText.text = $"P1: {PlayerTurn.Instance.p1Score} | P2: {PlayerTurn.Instance.p2Score} \n Current Player: {PlayerTurn.Instance.CurrentPlayerTurn} \n _isRolling: {rolling} \n Round Winner: {playerTurn.roundWinner} \n P1Money: {PlayerTurn.Instance.p1Money} \n P2Money: {PlayerTurn.Instance.p2Money} \n P1MoneyDeduct: {PlayerTurn.Instance.p1MoneyDeduct} \n P2MoneyDeduct: {PlayerTurn.Instance.p2MoneyDeduct} \n MoneyPool: {PlayerTurn.Instance.MoneyPool}";
+        debugText.text = $"P1: {PlayerTurn.Instance.p1Score} | P2: {PlayerTurn.Instance.p2Score} (Current Player: {PlayerTurn.Instance.CurrentPlayerTurn}) \n Round Winner: {playerTurn.roundWinner} \n P1Money: {PlayerTurn.Instance.p1Money} | P2Money: {PlayerTurn.Instance.p2Money} \n P1MoneyDeduct: {PlayerTurn.Instance.p1MoneyDeduct} | P2MoneyDeduct: {PlayerTurn.Instance.p2MoneyDeduct} \n MoneyPool: {PlayerTurn.Instance.MoneyPool} \n roundsPlayed: {PlayerTurn.Instance.roundsPlayed} \n _isRolling: {rolling} (diceThrower._finishedDiceCount: {diceThrower._finishedDiceCount})";
     }
 }

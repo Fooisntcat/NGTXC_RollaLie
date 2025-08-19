@@ -57,23 +57,25 @@ public class DiceThrowerScript : MonoBehaviour
 
         if (!_isRolling && playerTurn != null)
         {
-            if (playerTurn.CurrentPlayerTurn == 1 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
+            if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
             {
+                _isRolling = true; // lock rolling
+                // _finishedDiceCount = 0;
+                // playerTurn.p1Score = 0;
                 _nextTurnTriggered = false;
                 foreach (var die in _spawnedDice)
                 {
                     Destroy(die);
                 }
-                _spawnedDice.Clear(); // ✅ clear list so no dead dice stay around
+                _spawnedDice.Clear(); // clear list so no dead dice stay around
 
                 RollDice();
             }
 
-            // Handle Nudging via Joystick
-            HandleNudge();
-
-            if (playerTurn.CurrentPlayerTurn == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.W))))
+            if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.W))))
             {
+                _isRolling = true; // lock rolling
+                // playerTurn.p2Score = 0;
                 _nextTurnTriggered = false;
                 foreach (var die in _spawnedDice)
                 {
@@ -83,8 +85,10 @@ public class DiceThrowerScript : MonoBehaviour
                 //await Task.Delay(1000);
                 RollDice();
             }
-        }
 
+            // Handle Nudging via Joystick
+            HandleNudge();
+        }
     }
 
     private async void RollDice()

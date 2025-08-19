@@ -1,6 +1,6 @@
 using UnityEngine;
 using TiltFive;
-
+using TimerCountdown;
 
 public class PlayerTurn : MonoBehaviour
 {
@@ -11,19 +11,22 @@ public class PlayerTurn : MonoBehaviour
     // Player-specific data
     public int CurrentPlayerTurn;
     public int PlayerCount = 2;
-    public int p1Score = 0;
-    public int p2Score = 0;
-    public int p1Money = 100;
-    public int p2Money = 100;
-    public int p1MoneyDeduct = 0;
-    public int p2MoneyDeduct = 0;
-    public int MoneyPool = 0;
-    public int roundWinner = 0;
+    public int p1Score;
+    public int p2Score;
+    public int p1Money;
+    public int p2Money;
+    public int p1MoneyDeduct;
+    public int p2MoneyDeduct;
+    public int MoneyPool;
+    public int roundWinner;
+    public int roundsPlayed;
     private DiceThrowerScript diceThrower;
+    private TimerCountdown.Timer timerCountdown;
 
     private void Awake()
     {
         diceThrower = FindFirstObjectByType<DiceThrowerScript>();
+        timerCountdown = FindFirstObjectByType<TimerCountdown.Timer>();
 
         if (Instance == null)
         {
@@ -48,8 +51,8 @@ public class PlayerTurn : MonoBehaviour
         if (CurrentPlayerTurn > PlayerCount)
         {
             // Debug.Log("Current Player Turn: " + CurrentPlayerTurn);
-            
             CurrentPlayerTurn = 1;
+            roundsPlayed++;
         }
     }
     public void AddPoint(int points)
@@ -75,6 +78,7 @@ public class PlayerTurn : MonoBehaviour
             p2Money -= p2MoneyDeduct;
             MoneyPool += p2MoneyDeduct;
             CheckForWinner();
+            CheckForLoser();
             ResetScores();
             NextTurn();
         }
@@ -88,27 +92,44 @@ public class PlayerTurn : MonoBehaviour
         {
             roundWinner = 1;
             p1Money += MoneyPool;
-            Debug.Log("Player 1 wins!");
+            // Debug.Log("Player 1 wins!");
         }
         else if (p2Score > p1Score)
         {
             roundWinner = 2;
             p2Money += MoneyPool;
-            Debug.Log("Player 2 wins!");
+            // Debug.Log("Player 2 wins!");
         }
         else
         {
             roundWinner = 0; // It's a tie
-            Debug.Log("It's a tie!");
+            p1Money += MoneyPool / 2;
+            p2Money += MoneyPool / 2;
+            // Debug.Log("It's a tie!");
         }
     }
-    
+
+    private void CheckForLoser()
+    {
+        if (p1Money <= 0)
+        {
+            roundWinner = 2;
+            p2Money += MoneyPool;
+        }
+        else if (p2Money <= 0)
+        {
+            roundWinner = 1;
+            p1Money += MoneyPool;
+        }
+    }
+
+
     private void ResetScores()
     {
         p1Score = 0;
         p2Score = 0;
-        p1MoneyDeduct = 0;
-        p2MoneyDeduct = 0;
+        p1MoneyDeduct += 3;
+        p2MoneyDeduct += 3;
         MoneyPool = 0;
         diceThrower._finishedDiceCount = 0;
     }

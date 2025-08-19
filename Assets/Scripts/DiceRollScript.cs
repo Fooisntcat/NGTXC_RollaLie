@@ -94,7 +94,7 @@ public class DiceRollScript : MonoBehaviour
     // MUST HAVE DELAYRESULT (if not the CurrentPlayerTurn will turns to 3)
     private async void DelayResult()
     {
-        await Task.Delay(1000);
+        await Task.Delay(500);
         _hasStoppedRolling = false;
         _delayFinished = true;
     }
