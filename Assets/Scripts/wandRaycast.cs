@@ -314,7 +314,9 @@ public class FlashbangGrab : MonoBehaviour
 
     [SerializeField] private Transform wandHoldPoint;
     [SerializeField] private PlayerIndex playerIndex = PlayerIndex.One;
-    [SerializeField] private int price_flashbang = 20;
+    [SerializeField] private int price_flashbang = 5;
+    [SerializeField] private int price_dicereroll = 10;
+    [SerializeField] private int price_pumpndump = 20;
 
     void Awake()
     {
@@ -348,15 +350,62 @@ public class FlashbangGrab : MonoBehaviour
         float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
 
         // Grab only when touching AND trigger is pressed
-        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.E)) && other.CompareTag("Flashbang"))
+        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.R)) && other.CompareTag("Flashbang"))
         {
             if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
             {
                 playerTurn.p1Money -= price_flashbang; // Deduct money for player 1
+                Debug.Log($"Player 1 grabbed flashbang, remaining money: {playerTurn.p1Money}");
             }
             else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
             {
                 playerTurn.p2Money -= price_flashbang; // Deduct money for player 2
+                Debug.Log($"Player 2 grabbed flashbang, remaining money: {playerTurn.p2Money}");
+            }
+
+            objectRb = other.attachedRigidbody;
+
+            if (objectRb != null)
+            {
+                objectRb.useGravity = false;   // prevent falling while held
+            }
+
+            isHolding = true;
+        }
+
+        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)) && other.CompareTag("dice"))
+        {
+            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            {
+                playerTurn.p1Money -= price_dicereroll; // Deduct money for player 1
+                Debug.Log($"Player 1 grabbed dice reroll, remaining money: {playerTurn.p1Money}");
+            }
+            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+            {
+                playerTurn.p2Money -= price_dicereroll; // Deduct money for player 2
+                Debug.Log($"Player 2 grabbed dice reroll, remaining money: {playerTurn.p2Money}");
+            }
+
+            objectRb = other.attachedRigidbody;
+
+            if (objectRb != null)
+            {
+                objectRb.useGravity = false;   // prevent falling while held
+            }
+
+            isHolding = true;
+        }
+            if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)) && other.CompareTag("PumpNDump"))
+        {
+            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            {
+                playerTurn.p1Money -= price_pumpndump; // Deduct money for player 1
+                Debug.Log($"Player 1 grabbed PumpNDump, remaining money: {playerTurn.p1Money}");
+            }
+            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+            {
+                playerTurn.p2Money -= price_pumpndump; // Deduct money for player 2
+                Debug.Log($"Player 2 grabbed PumpNDump, remaining money: {playerTurn.p2Money}");
             }
 
             objectRb = other.attachedRigidbody;

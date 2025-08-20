@@ -15,6 +15,8 @@ public class DiceThrowerScript : MonoBehaviour
     // Players
     private bool p1RolledDice = false;
     private bool p2RolledDice = false;
+    public bool p1Cheat = false;
+    public bool p2Cheat = false;
 
     // Rolling Vars
     public int amountOfDice = 2;
@@ -31,7 +33,7 @@ public class DiceThrowerScript : MonoBehaviour
     private bool _nextTurnTriggered = false;
     private List<GameObject> _spawnedDice = new List<GameObject>();
 
-    // Cheating Manager
+    // Cheating Manager (unused)
     private Queue<(int playerId, bool cheated)> cheatLog = new Queue<(int, bool)>();
     private PlayerTurn playerTurnScript;
     private HashSet<int> playersLogged = new HashSet<int>();
@@ -93,7 +95,7 @@ public class DiceThrowerScript : MonoBehaviour
                 RollDice();
             }
 
-            if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.W))))
+            if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.E))))
             {
                 p2RolledDice = true;
                 _isRolling = true; // lock rolling
@@ -108,6 +110,12 @@ public class DiceThrowerScript : MonoBehaviour
                 //await Task.Delay(1000);
                 RollDice();
             }
+        }
+        else if (timerCountdown.timeRemaining == 0)
+        {
+            p1Cheat = false;
+            p2Cheat = false;
+            Debug.Log("Cheat codes reset.");
         }
 
         // Handle Nudge
@@ -223,13 +231,6 @@ public class DiceThrowerScript : MonoBehaviour
         if (wandLocation == null) return;
 
         // Optional keyboard fallback
-        // float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
-        // float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
-
-        // Make it relative to wand’s forward direction
-        // Vector3 nudgeDirection = (wandLocation.forward * y) + (wandLocation.right * x);
-        
-        // Optional keyboard fallback
         float x = stickInput.x + UnityEngine.Input.GetAxis("Horizontal");
         float y = stickInput.y + UnityEngine.Input.GetAxis("Vertical");
         // Make it relative to wand’s forward direction
@@ -239,11 +240,13 @@ public class DiceThrowerScript : MonoBehaviour
         {
             if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && p1RolledDice && timerCountdown.timeRemaining >= 0)
             {
-                AddCheat(1, true); // Player 1 nudged
+                p1Cheat = true; // Player 1 nudged
+                // AddCheat(1, true); // Player 1 nudged
             }
             else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && p2RolledDice && timerCountdown.timeRemaining >= 0)
             {
-                AddCheat(2, true); // Player 2 nudged
+                p2Cheat = true; // Player 2 nudged
+                // AddCheat(2, true); // Player 2 nudged
             }
 
             foreach (var die in _spawnedDice)
@@ -259,11 +262,22 @@ public class DiceThrowerScript : MonoBehaviour
 
             _lastNudgeTime = Time.time;
         }
-        else if (nudgeDirection.magnitude < 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
+        else if (nudgeDirection.magnitude < 0.1f)
         {
-            AddCheat(playerTurn.CurrentPlayerTurn, false);
+            if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1)
+            {
+                p1Cheat = false; // Player 1 stopped nudging
+            }
+            else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2)
+            {
+                p2Cheat = false; // Player 2 stopped nudging
+            }
+            // AddCheat(playerTurn.CurrentPlayerTurn, false);
         }
     }
+
+    #region Cheating Logs (unused)
+    /*
     public void AddCheat(int playerId, bool cheated)
     {
         var tempList = new List<(int playerId, bool cheated)>(cheatLog);
@@ -326,4 +340,6 @@ public class DiceThrowerScript : MonoBehaviour
     }
     return null; // not found
     }
+    */
+    #endregion
 }

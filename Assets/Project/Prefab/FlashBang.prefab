@@ -475,7 +475,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c995ccac9047fc4cbda090ebc3446a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashbangPrefab: {fileID: 0}
+  WhiteScreen: {fileID: 0}
   bangSound: {fileID: 687481107970048550}
   whiteNoise: {fileID: 4145372953001827295}
   flashDuration: 2
