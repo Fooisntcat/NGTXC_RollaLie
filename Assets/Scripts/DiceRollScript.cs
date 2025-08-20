@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using TimerCountdown;
+using TiltFive;
 
 public class DiceRollScript : MonoBehaviour
 {
     public Transform[] diceFaces;
     public Rigidbody rb;
+    [SerializeField] private AudioSource diceHit;
 
     private int _diceIndex = -1;
     public bool _hasStoppedRolling;
@@ -15,7 +18,7 @@ public class DiceRollScript : MonoBehaviour
     // public diceThrower diceThrower;
     private DiceThrowerScript diceThrower;
     // public static int amountOfDice;
-
+    private TimerCountdown.Timer timerCountdown;
 
     public static UnityAction<int, int> OnDiceResult;
 
@@ -25,19 +28,26 @@ public class DiceRollScript : MonoBehaviour
         _delayFinished = false;
         _hasStoppedRolling = false;
         diceThrower = FindFirstObjectByType<DiceThrowerScript>();
+        timerCountdown = FindFirstObjectByType<TimerCountdown.Timer>();
     }
 
     private void Update()
     {
         if (!_delayFinished) return;
+        // if (timerCountdown.timeRemaining == 0)
+        // {
+        // rb.angularVelocity = Vector3.zero; // Stop the dice from rolling
+        // diceThrower._isRolling = false; // lock rolling
+        // }
         if (!_hasStoppedRolling && rb.angularVelocity == Vector3.zero)
+        // if (rb.angularVelocity == Vector3.zero) // (this will keep looping the round and etc etc)
         {
+            Debug.Log("Dice has stopped rolling");
             diceThrower._isRolling = false; // lock rolling
             _hasStoppedRolling = true;
             GetNumberOnTopFace();
             // Debug.Log("Current dice index: " + _diceIndex);
         }
-        // if (transform.position.y < -10f && diceThrower._isRolling) // Dice fell off the table
         if (transform.position.y < -10f) // Dice fell off the table
         {
             // Debug.Log("dice < -10f diceThrower._isRolling? " + diceThrower._isRolling);
@@ -73,7 +83,7 @@ public class DiceRollScript : MonoBehaviour
 
     public void RollDice(float throwForce, float rollForce, int i)
     {
-        //_delayFinished = false;      // Reset delay flag
+        _delayFinished = false;      // Reset delay flag
         //_hasStoppedRolling = false;  // Reset stopped rolling flag
 
         _diceIndex = i;
@@ -97,5 +107,22 @@ public class DiceRollScript : MonoBehaviour
         await Task.Delay(1000);
         _hasStoppedRolling = false;
         _delayFinished = true;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Table"))
+        {
+            TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.One, ControllerIndex.Right);
+            TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.Two, ControllerIndex.Right);
+            // Handle collision with the table
+            diceHit.pitch = Random.Range(1.2f, 1.4f); // Randomize pitch for more natural sound
+            diceHit.Play(); // Play dice hit sound
+            ParticleSystem particleSystem = GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                particleSystem.Play();
+            }
+        }
     }
 }

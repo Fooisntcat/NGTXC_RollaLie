@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TimerCountdown;
 
 public class FlashBang : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class FlashBang : MonoBehaviour
         Debug.Log("WhiteScreen reference: " + (whiteScreen != null));
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true; // Don't move until thrown
+        Timer timer = FindFirstObjectByType<Timer>();
     }
 
     void OnMouseDown()
@@ -45,7 +47,11 @@ public class FlashBang : MonoBehaviour
         {
             StartCoroutine(FlashEffect());
             Debug.Log("Flashbang triggered!");
-            //FlashEffect();
+            Timer timer = FindFirstObjectByType<Timer>();
+            if (timer.timerIsRunning)
+            {
+                timer.timeRemaining += 4;
+            }
             hasFlashed = true;
         }
     }

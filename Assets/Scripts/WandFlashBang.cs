@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TiltFive;
+using System.Threading.Tasks;
 
 public class WandFlashbang : MonoBehaviour
 {
-    public Image whiteScreen;
+    private int playerFlashbang; // The player that holds the flashbang
+    public Image WhiteScreen;
+    // public GameObject flashbangScreen;
+    // private Image P1WhiteScreen;
     public AudioSource bangSound, whiteNoise;
     public float flashDuration = 2f;
     // public float throwForce = 10f;
@@ -25,7 +29,51 @@ public class WandFlashbang : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.isKinematic = true;
+        // rb.isKinematic = true;
+        // flashbangImage.color = new Color(1, 1, 1, 1);
+        // var canvas = Instantiate(P1WhiteScreen, Vector3.zero, Quaternion.identity);
+        // P1WhiteScreen = canvas.GetComponentInChildren<Image>();
+    }
+
+    /*
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!hasFlashed && collision.gameObject.CompareTag("Table"))
+            // if (collision.gameObject.CompareTag("Table"))
+            {
+                StartCoroutine(FlashEffect());
+                hasFlashed = true;
+                Destroy(gameObject, flashDuration + 1f); // Destroy after flash duration + 1 second
+            }
+        }
+        */
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Flashbang hits table → trigger explosion
+        if (!hasFlashed && collision.gameObject.CompareTag("Table"))
+        {
+            StartCoroutine(FlashEffect());
+            hasFlashed = true;
+            Destroy(gameObject, flashDuration + 1f);
+        }
+    }
+
+    private System.Collections.IEnumerator FlashEffect()
+    {
+        bangSound.Play();
+        whiteNoise.Play();
+            WhiteScreen.color = Color.white;
+
+
+        yield return new WaitForSeconds(flashDuration);
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / 1f;
+            WhiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t)); 
+            yield return null;
+        }
     }
 
     #region Wrongly put script (raycast should be in WandRaycast not in the Flashbang)
@@ -172,34 +220,7 @@ public class WandFlashbang : MonoBehaviour
            return false;
        }
        */
-       #endregion
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!hasFlashed && collision.gameObject.CompareTag("Table"))
-        {
-            StartCoroutine(FlashEffect());
-            hasFlashed = true;
-            Destroy(gameObject, flashDuration + 1f); // Destroy after flash duration + 1 second
-        }
-    }
-
-    private System.Collections.IEnumerator FlashEffect()
-    {
-        bangSound.Play();
-        whiteNoise.Play();
-        whiteScreen.color = Color.white;
-
-        yield return new WaitForSeconds(flashDuration);
-
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime / 1f;
-            whiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
-            yield return null;
-        }
-    }
+    #endregion
 
     /*private void OnTriggerEnter(Collider other)
     {

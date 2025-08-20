@@ -454,6 +454,11 @@ namespace TiltFive
                 }
             }
         }
+
+        public static bool GetTriggerDown(PlayerIndex playerIndex)
+        {
+            throw new NotImplementedException();
+        }
 #endif
 
         #endregion Private Functions

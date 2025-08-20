@@ -8,6 +8,11 @@ TagManager:
   - Table
   - P1Wand
   - DiceThrower
+  - dice
+  - Hand
+  - PumpNDump
+  - p1Hand
+  - p2Hand
   layers:
   - Default
   - TransparentFX
@@ -16,10 +21,10 @@ TagManager:
   - Water
   - UI
   - Flashbang
+  - Hand
   - 
   - 
-  - 
-  - 
+  - Post-processing Volumes
   - 
   - 
   - 
