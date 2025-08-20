@@ -196,7 +196,6 @@ public class PlayerTurn : MonoBehaviour
 }
 */
 #endregion
-
 #region Fixed Logic (still some bugs)
 /*
 using UnityEngine;
@@ -426,6 +425,7 @@ using TimerCountdown;
 
 public class PlayerTurn : MonoBehaviour
 {
+    #region Variables
     public static PlayerTurn Instance { get; private set; }
 
     public int CurrentPlayerTurn = 1;
@@ -459,6 +459,7 @@ public class PlayerTurn : MonoBehaviour
     // refs
     private DiceThrowerScript diceThrower;
     private TimerCountdown.Timer timerCountdown;
+    #endregion
 
     private void Awake()
     {
@@ -541,7 +542,7 @@ public class PlayerTurn : MonoBehaviour
         if (CurrentPlayerTurn > PlayerCount)
         {
             CurrentPlayerTurn = 1;
-            roundsPlayed++;
+            // roundsPlayed++;
             Debug.Log($"New full round started. roundsPlayed = {roundsPlayed}");
         }
     }
@@ -622,6 +623,10 @@ public class PlayerTurn : MonoBehaviour
 
         // 6) Reset round scores and increment the base deduction per your original plan.
         ResetScores();
+
+        // Only now increment roundsPlayed, AFTER deductions/penalties are done
+        roundsPlayed++;
+        Debug.Log($"Full round completed. roundsPlayed = {roundsPlayed}");
 
         // After full-round resolution, move to next turn (this will wrap and increment roundsPlayed)
         NextTurn();

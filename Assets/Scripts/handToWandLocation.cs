@@ -43,7 +43,7 @@ public class handToWandLocation : MonoBehaviour
     // Slap hand (clap sound)
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collision Hand");
+        // Debug.Log("Collision Hand");
         bool p1Cheat = diceThrower.p1Cheat;
         bool p2Cheat = diceThrower.p2Cheat;
         if (other.CompareTag("Hand"))
