@@ -46,7 +46,7 @@ public class handToWandLocation : MonoBehaviour
         // Debug.Log("Collision Hand");
         bool p1Cheat = diceThrower.p1Cheat;
         bool p2Cheat = diceThrower.p2Cheat;
-        if (other.CompareTag("Hand"))
+        if (other.CompareTag("p1Hand"))
         // if (other.CompareTag("p1Hand") || other.CompareTag("p2Hand"))
         {
             slap.Play();
@@ -54,16 +54,24 @@ public class handToWandLocation : MonoBehaviour
             // wand.Input(0.5f, 0.2f);
             TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.One, ControllerIndex.Right);
             TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.Two, ControllerIndex.Right);
-            if (p1Cheat == true)
+
+            if (p1Cheat == true && playerTurn.CurrentPlayerTurn == 1)
             {
                 // slap.Play();
                 playerTurn.p1Money -= 10; // Deduct 10 from Player 1's money
-
             }
-            else if (p2Cheat == true)
+            else if (p2Cheat == true && playerTurn.CurrentPlayerTurn == 2)
             {
                 // slap.Play();
                 playerTurn.p2Money -= 10; // Deduct 10 from Player 2's money
+            }
+            else if (p1Cheat == false && playerTurn.CurrentPlayerTurn == 1)
+            {
+                playerTurn.p2Money -= 10;
+            }
+            else if (p2Cheat == false && playerTurn.CurrentPlayerTurn == 2)
+            {
+                playerTurn.p1Money -= 10;
             }
         }
     }

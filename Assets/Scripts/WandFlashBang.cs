@@ -11,6 +11,7 @@ public class WandFlashbang : MonoBehaviour
     // private Image P1WhiteScreen;
     public AudioSource bangSound, whiteNoise;
     public float flashDuration = 2f;
+    public bool HasDeducted = false;
     // public float throwForce = 10f;
     // public float grabDistance = 2f;
     // public float positionLerpSpeed = 20f;
@@ -19,6 +20,7 @@ public class WandFlashbang : MonoBehaviour
     private Rigidbody rb;
     // private bool isDragging = false;
     private bool hasFlashed = false;
+    private PlayerTurn playerTurn;
     // private bool isGrabbed = false;
     // private Vector3 grabOffset;
     // private Quaternion grabRotationOffset;
@@ -33,6 +35,14 @@ public class WandFlashbang : MonoBehaviour
         // flashbangImage.color = new Color(1, 1, 1, 1);
         // var canvas = Instantiate(P1WhiteScreen, Vector3.zero, Quaternion.identity);
         // P1WhiteScreen = canvas.GetComponentInChildren<Image>();
+    }
+
+    void Update()
+    {
+        if (transform.position.y < -10f) // Dice fell off the table
+        {
+            Destroy(gameObject);
+        }
     }
 
     /*
@@ -62,7 +72,7 @@ public class WandFlashbang : MonoBehaviour
     {
         bangSound.Play();
         whiteNoise.Play();
-            WhiteScreen.color = Color.white;
+        WhiteScreen.color = Color.white;
 
 
         yield return new WaitForSeconds(flashDuration);
@@ -71,8 +81,31 @@ public class WandFlashbang : MonoBehaviour
         while (t < 1f)
         {
             t += Time.deltaTime / 1f;
-            WhiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t)); 
+            WhiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
             yield return null;
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (HasDeducted) return;
+
+        if (other.CompareTag("p1Hand"))
+        {
+            Debug.Log("Hand collision detected for Player 1.");
+            if (TiltFive.Input.GetTrigger(ControllerIndex.Right, PlayerIndex.One) > 0.8f)
+            {
+                playerTurn.p1Money -= 5; // Deduct 10 from Player 1's money
+                HasDeducted = true;
+            }
+        }
+        if (other.CompareTag("p2Hand"))
+        {
+            Debug.Log("Hand collision detected for Player 2.");
+            if (TiltFive.Input.GetTrigger(ControllerIndex.Right, PlayerIndex.Two) > 0.8f)
+            {
+                playerTurn.p2Money -= 5; // Deduct 10 from Player 2's money
+                HasDeducted = true;
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 using UnityEngine;
 using TiltFive;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 public class diceReroll : MonoBehaviour
 {
@@ -10,18 +11,24 @@ public class diceReroll : MonoBehaviour
     [SerializeField] private PlayerIndex lastPlayerTouched;
     private ControllerIndex lastControllerTouched = ControllerIndex.Right;
     private PlayerTurn playerTurn;
+    private WandFlashbang wandFlashbang;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         hasRerolled = false;
         playerTurn = FindFirstObjectByType<PlayerTurn>();
+        wandFlashbang = FindFirstObjectByType<WandFlashbang>();
+        wandFlashbang.HasDeducted = false; // Reset the deduction state
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (transform.position.y < -10f) // Dice fell off the table
+        {
+            Destroy(gameObject);
+        }
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -50,12 +57,15 @@ public class diceReroll : MonoBehaviour
         */
     private void OnTriggerEnter(Collider other)
     {
+        if (wandFlashbang.HasDeducted) return;
+
         if (other.CompareTag("p1Hand"))
         {
             Debug.Log("Hand collision detected for Player 1.");
             if (TiltFive.Input.GetTrigger(ControllerIndex.Right, PlayerIndex.One) > 0.8f)
             {
                 playerTurn.p1Money -= 10; // Deduct 10 from Player 1's money
+                wandFlashbang.HasDeducted = true;
             }
         }
         if (other.CompareTag("p2Hand"))
@@ -64,6 +74,7 @@ public class diceReroll : MonoBehaviour
             if (TiltFive.Input.GetTrigger(ControllerIndex.Right, PlayerIndex.Two) > 0.8f)
             {
                 playerTurn.p2Money -= 10; // Deduct 10 from Player 2's money
+                wandFlashbang.HasDeducted = true;
             }
         }
     }
