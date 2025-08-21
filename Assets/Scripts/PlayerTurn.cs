@@ -422,6 +422,8 @@ public class PlayerTurn : MonoBehaviour
 using UnityEngine;
 using TiltFive;
 using TimerCountdown;
+// using UnityEditor.SearchService;
+using UnityEngine.SceneManagement;
 
 public class PlayerTurn : MonoBehaviour
 {
@@ -445,6 +447,7 @@ public class PlayerTurn : MonoBehaviour
     public int roundWinner;
     public int roundsPlayed;
     public int gameWinner;
+    private bool isGameOverTriggered = false;
 
     // Pump: store the round number when pump was placed (-1 = none)
     public int p1PumpPlacedRound = -1;
@@ -462,7 +465,7 @@ public class PlayerTurn : MonoBehaviour
     #endregion
 
     private void Awake()
-    {
+    {   
         diceThrower = FindFirstObjectByType<DiceThrowerScript>();
         timerCountdown = FindFirstObjectByType<TimerCountdown.Timer>();
 
@@ -632,18 +635,61 @@ public class PlayerTurn : MonoBehaviour
         NextTurn();
     }
 
-    private void CheckForLoser()
-    {
-        if (p1Money <= 0)
+    /*
+        private void CheckForLoser()
         {
+            if (p1Money <= 0)
+            {
+                gameWinner = 2;
+                Debug.Log("Player 2 wins the game!");
+                DontDestroyOnLoad(gameObject); // <-- Keep alive between scenes
+                SceneManager.LoadScene("GameOver"); // Load game over scene or similar
+            }
+            else if (p2Money <= 0)
+            {
+                gameWinner = 1;
+                Debug.Log("Player 1 wins the game!");
+                DontDestroyOnLoad(gameObject); // <-- Keep alive between scenes
+                SceneManager.LoadScene("GameOver"); // Load game over scene or similar
+            }
+        }
+        */
+        private void CheckForLoser()
+    {
+        if (isGameOverTriggered) return; // guard: only trigger once
+
+        // handle both-lose case explicitly
+        bool p1Dead = p1Money <= 0;
+        bool p2Dead = p2Money <= 0;
+
+        if (p1Dead && p2Dead)
+        {
+            isGameOverTriggered = true;
+            gameWinner = 0; // 0 = draw / special
+            Debug.Log("Both players have <= 0 money — draw condition.");
+            // optionally set DontDestroyOnLoad(gameObject); if you need it in GameOver scene
+            SceneManager.LoadScene("GameOver");
+            return;
+        }
+        else if (p1Dead)
+        {
+            isGameOverTriggered = true;
             gameWinner = 2;
             Debug.Log("Player 2 wins the game!");
+            // optionally call DontDestroyOnLoad(gameObject); // if needed
+            SceneManager.LoadScene("GameOver");
+            return;
         }
-        else if (p2Money <= 0)
+        else if (p2Dead)
         {
+            isGameOverTriggered = true;
             gameWinner = 1;
             Debug.Log("Player 1 wins the game!");
+            // optionally call DontDestroyOnLoad(gameObject); // if needed
+            SceneManager.LoadScene("GameOver");
+            return;
         }
+        // otherwise no loser yet
     }
 
     private void ResetScores()

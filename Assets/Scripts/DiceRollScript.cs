@@ -42,7 +42,7 @@ public class DiceRollScript : MonoBehaviour
         if (!_hasStoppedRolling && rb.angularVelocity == Vector3.zero)
         // if (rb.angularVelocity == Vector3.zero) // (this will keep looping the round and etc etc)
         {
-            Debug.Log("Dice has stopped rolling");
+            // Debug.Log("Dice has stopped rolling");
             diceThrower._isRolling = false; // lock rolling
             _hasStoppedRolling = true;
             GetNumberOnTopFace();

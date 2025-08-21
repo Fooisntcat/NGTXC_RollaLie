@@ -10,13 +10,20 @@ public class SpawnOnEmpty : MonoBehaviour
     private bool itemBought = false;
     private bool isInside = false;
     private float timer = 0f;
-    [SerializeField]private AudioSource kaching;
+    [SerializeField] private AudioSource kaching;
+    private WandFlashbang wandFlashbang;
 
-    private void OnTriggerEnter(Collider other)
+    void Awake()
+    {
+        wandFlashbang = FindFirstObjectByType<WandFlashbang>();
+        wandFlashbang.HasDeducted = false; // Reset the deduction state
+    }
+
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag(targetTag))
         {
-            
+
             isInside = true;
             timer = 0f; // reset timer
         }
@@ -47,6 +54,7 @@ public class SpawnOnEmpty : MonoBehaviour
                 Instantiate(objectToSpawn, spawnPoint.position, spawnPoint.rotation);
                 itemBought = false;
                 timer = 0f; // reset so it won’t keep spawning repeatedly
+                wandFlashbang.HasDeducted = false;
             }
         }
     }

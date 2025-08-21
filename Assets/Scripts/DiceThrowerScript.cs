@@ -78,7 +78,8 @@ public class DiceThrowerScript : MonoBehaviour
         // Makes sure the dice stops rolling, the currentPlayerTurn gets to roll
         if (!_isRolling && playerTurn != null && timerCountdown.timeRemaining == 0)
         {
-            if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
+            // if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
+            if (playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.One, ControllerIndex.Right, PlayerIndex.One) || (UnityEngine.Input.GetKey(KeyCode.Q))))
             {
                 p1RolledDice = true;
                 _isRolling = true; // lock rolling
@@ -95,7 +96,7 @@ public class DiceThrowerScript : MonoBehaviour
                 RollDice();
             }
 
-            if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.A, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.E))))
+            if (playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && (TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.One, ControllerIndex.Right, PlayerIndex.Two) || (UnityEngine.Input.GetKey(KeyCode.E))))
             {
                 p2RolledDice = true;
                 _isRolling = true; // lock rolling

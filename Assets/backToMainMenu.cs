@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TiltFive;
 
-public class TitFiveScript : MonoBehaviour
+public class backToMainMenu : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        SceneManager.UnloadSceneAsync("RollaLie"); // Unload the previous scene if necessary
     }
 
     // Update is called once per frame
@@ -29,7 +29,7 @@ public class TitFiveScript : MonoBehaviour
             TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.Two, ControllerIndex.Right, PlayerIndex.One) || 
             TiltFive.Input.GetButtonDown(TiltFive.Input.WandButton.Two, ControllerIndex.Right, PlayerIndex.Two))
         {
-            SceneManager.LoadScene("RollaLie");
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }
