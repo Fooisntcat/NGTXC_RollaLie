@@ -305,6 +305,8 @@ public class FlashbangGrab : MonoBehaviour
 #region Using collision (rb.movement Fixed?)
 using UnityEngine;
 using TiltFive;
+using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class FlashbangGrab : MonoBehaviour
 {
@@ -318,9 +320,17 @@ public class FlashbangGrab : MonoBehaviour
     [SerializeField] private int price_dicereroll = 10;
     [SerializeField] private int price_pumpndump = 20;
 
+    [SerializeField] private TextController textController;
+    // [SerializeField] private TextController diceRerollDescription;
+    // [SerializeField] private TextController flashbangDescription;
+    private TextController TextController;
+    private SpawnerScript spawnScript;
+
     void Awake()
     {
         playerTurn = FindFirstObjectByType<PlayerTurn>();
+        spawnScript = FindFirstObjectByType<SpawnerScript>();
+        textController = FindFirstObjectByType<TextController>();
     }
     void FixedUpdate()
     {
@@ -350,72 +360,124 @@ public class FlashbangGrab : MonoBehaviour
         float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
 
         // Grab only when touching AND trigger is pressed
-        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.R)) && other.CompareTag("Flashbang"))
+        // if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.R)) && other.CompareTag("Flashbang"))
+        if (other.CompareTag("Flashbang"))
         {
-            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            // flashbangDescription.ShowText(); // Show description when hovering over flashbang
+            textController.ShowText("flashbang", playerIndex == PlayerIndex.One ? 1 : 2);
+            if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.R)))
             {
-                playerTurn.p1Money -= price_flashbang; // Deduct money for player 1
-                Debug.Log($"Player 1 grabbed flashbang, remaining money: {playerTurn.p1Money}");
-            }
-            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
-            {
-                playerTurn.p2Money -= price_flashbang; // Deduct money for player 2
-                Debug.Log($"Player 2 grabbed flashbang, remaining money: {playerTurn.p2Money}");
-            }
+                if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+                {
+                    // playerTurn.p1Money -= price_flashbang; // Deduct money for player 1
+                    PlayerTurn.Instance.ChangeMoney(1, -price_flashbang);
+                    // Debug.Log($"Player 1 grabbed flashbang, remaining money: {playerTurn.p1Money}");
+                    // textController.ShowText("flashbang", 1);
+                }
+                else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+                {
+                    PlayerTurn.Instance.ChangeMoney(2, -price_flashbang);
+                    // Debug.Log($"Player 2 grabbed flashbang, remaining money: {playerTurn.p2Money}");
+                    // textController.ShowText("flashbang", 2);
+                }
 
-            objectRb = other.attachedRigidbody;
+                objectRb = other.attachedRigidbody;
 
-            if (objectRb != null)
-            {
-                objectRb.useGravity = false;   // prevent falling while held
+                if (objectRb != null)
+                {
+                    objectRb.useGravity = false;   // prevent falling while held
+                }
+
+                isHolding = true;
             }
-
-            isHolding = true;
         }
 
-        if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)) && other.CompareTag("dice"))
+        if (other.CompareTag("diceReroll"))
         {
-            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            // diceRerollDescription.ShowText(); // Show description when hovering over dice reroll
+            textController.ShowText("diceReroll", playerIndex == PlayerIndex.One ? 1 : 2);
+            if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)))
             {
-                playerTurn.p1Money -= price_dicereroll; // Deduct money for player 1
-                Debug.Log($"Player 1 grabbed dice reroll, remaining money: {playerTurn.p1Money}");
-            }
-            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
-            {
-                playerTurn.p2Money -= price_dicereroll; // Deduct money for player 2
-                Debug.Log($"Player 2 grabbed dice reroll, remaining money: {playerTurn.p2Money}");
-            }
+                if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+                {
+                    PlayerTurn.Instance.ChangeMoney(1, -price_dicereroll);
+                    // Debug.Log($"Player 1 grabbed dice reroll, remaining money: {playerTurn.p1Money}");
+                    // textController.ShowText("diceReroll", 1);
+                }
+                else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+                {
+                    PlayerTurn.Instance.ChangeMoney(2, -price_dicereroll);
+                    // Debug.Log($"Player 2 grabbed dice reroll, remaining money: {playerTurn.p2Money}");
+                    // textController.ShowText("diceReroll", 2);
+                }
 
-            objectRb = other.attachedRigidbody;
+                objectRb = other.attachedRigidbody;
 
-            if (objectRb != null)
-            {
-                objectRb.useGravity = false;   // prevent falling while held
+                if (objectRb != null)
+                {
+                    objectRb.useGravity = false;   // prevent falling while held
+                }
+
+                isHolding = true;
             }
-
-            isHolding = true;
         }
-            if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)) && other.CompareTag("PumpNDump"))
+        if (other.CompareTag("PumpNDump"))
         {
-            if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+            textController.ShowText("PumpNDump", playerIndex == PlayerIndex.One ? 1 : 2); // Show description when hovering over PumpNDump
+            if (!isHolding && (trigger > 0.8f || UnityEngine.Input.GetKey(KeyCode.T)))
             {
-                playerTurn.p1Money -= price_pumpndump; // Deduct money for player 1
-                Debug.Log($"Player 1 grabbed PumpNDump, remaining money: {playerTurn.p1Money}");
+                if (playerIndex == PlayerIndex.One) // Only allow player 1 to grab
+                {
+                    // playerTurn.p1Money -= price_pumpndump; // Deduct money for player 1
+                    PlayerTurn.Instance.ChangeMoney(1, -price_pumpndump);
+                    PlayerTurn.Instance.PumpNDump(1);
+                    // Debug.Log($"Player 1 grabbed PumpNDump, remaining money: {playerTurn.p1Money}");
+                    // textController.ShowText("PumpNDump", 1);
+                }
+                else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+                {
+                    PlayerTurn.Instance.ChangeMoney(2, -price_pumpndump);
+                    PlayerTurn.Instance.PumpNDump(2);
+                    // Debug.Log($"Player 2 grabbed PumpNDump, remaining money: {playerTurn.p2Money}");
+                    // textController.ShowText("PumpNDump", 2);
+                }
+
+                objectRb = other.attachedRigidbody;
+
+                if (objectRb != null)
+                {
+                    objectRb.useGravity = false;   // prevent falling while held
+                }
+
+                isHolding = true;
             }
-            else if (playerIndex == PlayerIndex.Two) // Only allow player 2 to grab
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        // if (textController != null) textController.HideText(); // Hide description when not hovering over PumpNDump
+        // if (flashbangDescription != null) flashbangDescription.HideText(); // Hide description when not hovering over flashbang
+        // if (diceRerollDescription != null) diceRerollDescription.HideText(); // Hide description when not hovering over dice reroll
+        float trigger = TiltFive.Input.GetTrigger(ControllerIndex.Right, playerIndex);
+        // if ((other.CompareTag("Flashbang") || other.CompareTag("diceReroll") || other.CompareTag("PumpNDump")) && trigger < 0.2f && isHolding)
+        if (other.CompareTag("Flashbang") || other.CompareTag("diceReroll") || other.CompareTag("PumpNDump"))
+        {
+            Debug.Log("Exited trigger");
+            textController.ShowText("", playerIndex == PlayerIndex.One ? 1 : 2);
+            // textController.HideText();
+
+            // spawnScript = FindFirstObjectByType<SpawnerScript>();
+            // spawnScript.itemBought = false; // Set item bought to false when exiting trigger
+            // textController.HideText();
+            // spawnScript = FindFirstObjectByType<SpawnerScript>();
+            if (spawnScript != null)
             {
-                playerTurn.p2Money -= price_pumpndump; // Deduct money for player 2
-                Debug.Log($"Player 2 grabbed PumpNDump, remaining money: {playerTurn.p2Money}");
+                spawnScript.itemBought = false;
             }
 
-            objectRb = other.attachedRigidbody;
+            isHolding = false;
+            objectRb = null;
 
-            if (objectRb != null)
-            {
-                objectRb.useGravity = false;   // prevent falling while held
-            }
-
-            isHolding = true;
         }
     }
 }

@@ -13,8 +13,8 @@ public class DiceThrowerScript : MonoBehaviour
     private TimerCountdown.Timer timerCountdown;
 
     // Players
-    private bool p1RolledDice = false;
-    private bool p2RolledDice = false;
+    public bool p1RolledDice = false;
+    public bool p2RolledDice = false;
     public bool p1Cheat = false;
     public bool p2Cheat = false;
 
@@ -161,7 +161,7 @@ public class DiceThrowerScript : MonoBehaviour
         if (_finishedDiceCount >= amountOfDice)
         {
             _isRolling = false; // 
-            Debug.Log("All dice finished rolling!");
+            // Debug.Log("All dice finished rolling!");
         }
     }
 
@@ -239,12 +239,13 @@ public class DiceThrowerScript : MonoBehaviour
 
         if (nudgeDirection.magnitude > 0.1f && Time.time - _lastNudgeTime > nudgeCooldown)
         {
-            if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && p1RolledDice && timerCountdown.timeRemaining >= 0)
+            // if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && p1RolledDice && timerCountdown.timeRemaining >= 0)
+            if (playerTurn != null && playerTurn.CurrentPlayerTurn == 1 && _finishedDiceCount == 0 && timerCountdown.timeRemaining >= 0)
             {
                 p1Cheat = true; // Player 1 nudged
                 // AddCheat(1, true); // Player 1 nudged
             }
-            else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && p2RolledDice && timerCountdown.timeRemaining >= 0)
+            else if (playerTurn != null && playerTurn.CurrentPlayerTurn == 2 && _finishedDiceCount == 2 && timerCountdown.timeRemaining >= 0)
             {
                 p2Cheat = true; // Player 2 nudged
                 // AddCheat(2, true); // Player 2 nudged

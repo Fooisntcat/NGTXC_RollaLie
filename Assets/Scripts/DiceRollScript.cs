@@ -113,8 +113,8 @@ public class DiceRollScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Table"))
         {
-            TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.One, ControllerIndex.Right);
-            TiltFive.Wand.TrySendImpulse(0.5f, 1f, PlayerIndex.Two, ControllerIndex.Right);
+            TiltFive.Wand.TrySendImpulse(0.3f, 0.1f, PlayerIndex.One, ControllerIndex.Right);
+            TiltFive.Wand.TrySendImpulse(0.3f, 0.1f, PlayerIndex.Two, ControllerIndex.Right);
             // Handle collision with the table
             diceHit.pitch = Random.Range(1.2f, 1.4f); // Randomize pitch for more natural sound
             diceHit.Play(); // Play dice hit sound

@@ -8,10 +8,12 @@ public class diceReroll : MonoBehaviour
     private Rigidbody rb;
     private bool hasRerolled = false;
     // [SerializeField] private PlayerIndex? lastPlayerTouched = null;
-    [SerializeField] private PlayerIndex lastPlayerTouched;
+    // [SerializeField] private PlayerIndex lastPlayerTouched;
     private ControllerIndex lastControllerTouched = ControllerIndex.Right;
     private PlayerTurn playerTurn;
     private WandFlashbang wandFlashbang;
+    private UI_PlayerStatsOnTable UI_PlayerStatsOnTable;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -20,11 +22,13 @@ public class diceReroll : MonoBehaviour
         playerTurn = FindFirstObjectByType<PlayerTurn>();
         wandFlashbang = FindFirstObjectByType<WandFlashbang>();
         wandFlashbang.HasDeducted = false; // Reset the deduction state
+        UI_PlayerStatsOnTable = FindFirstObjectByType<UI_PlayerStatsOnTable>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         if (transform.position.y < -10f) // Dice fell off the table
         {
             Destroy(gameObject);
@@ -35,26 +39,29 @@ public class diceReroll : MonoBehaviour
         // Flashbang hits table → trigger explosion
         if (!hasRerolled && collision.gameObject.CompareTag("Table"))
         {
+
             Debug.Log("Rerolling dice due to collision with table.");
             PlayerTurn.Instance.RerollDice();
             hasRerolled = true;
+            UI_PlayerStatsOnTable.PlayerTurnFinished(1);
             Destroy(gameObject, 1f);
         }
     }
 
-        /*
-        if (collision.gameObject.CompareTag("Hand"))
+    /*
+    if (collision.gameObject.CompareTag("Hand"))
+    {
+        var id = collision.collider.GetComponentInParent<WandIdentity>();
+        if (id != null)
         {
-            var id = collision.collider.GetComponentInParent<WandIdentity>();
-            if (id != null)
-            {
-                lastPlayerTouched = id.playerIndex;
-                lastControllerTouched = id.controllerIndex;
-                Debug.Log($"Touched by: {lastPlayerTouched} ({lastControllerTouched})");
-            }
-            PlayerTurn.Instance.PumpNDump(id.playerIndex == PlayerIndex.One ? 1 : 2);
+            lastPlayerTouched = id.playerIndex;
+            lastControllerTouched = id.controllerIndex;
+            Debug.Log($"Touched by: {lastPlayerTouched} ({lastControllerTouched})");
         }
-        */
+        PlayerTurn.Instance.PumpNDump(id.playerIndex == PlayerIndex.One ? 1 : 2);
+    }
+    */
+    /*
     private void OnTriggerEnter(Collider other)
     {
         if (wandFlashbang.HasDeducted) return;
@@ -77,7 +84,7 @@ public class diceReroll : MonoBehaviour
                 wandFlashbang.HasDeducted = true;
             }
         }
-    }
+    } */
 }
 
 

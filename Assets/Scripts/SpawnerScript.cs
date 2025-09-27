@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class SpawnOnEmpty : MonoBehaviour
+public class SpawnerScript : MonoBehaviour
 {
     [SerializeField] private GameObject objectToSpawn; // prefab
     [SerializeField] private Transform spawnPoint;     // where to spawn
     [SerializeField] private string targetTag; // tag of object to detect
     [SerializeField] private float waitTime = 3f;
 
-    private bool itemBought = false;
+    public bool itemBought = false;
     private bool isInside = false;
     private float timer = 0f;
     [SerializeField] private AudioSource kaching;
@@ -23,7 +23,6 @@ public class SpawnOnEmpty : MonoBehaviour
     {
         if (other.CompareTag(targetTag))
         {
-
             isInside = true;
             timer = 0f; // reset timer
         }
@@ -52,7 +51,7 @@ public class SpawnOnEmpty : MonoBehaviour
             if (timer >= waitTime)
             {
                 Instantiate(objectToSpawn, spawnPoint.position, spawnPoint.rotation);
-                itemBought = false;
+                // itemBought = false;
                 timer = 0f; // reset so it won’t keep spawning repeatedly
                 wandFlashbang.HasDeducted = false;
             }

@@ -82,9 +82,12 @@ public class WandFlashbang : MonoBehaviour
         {
             t += Time.deltaTime / 1f;
             WhiteScreen.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, t));
+            Debug.Log("WhiteScreen color: " + WhiteScreen.color);
             yield return null;
         }
     }
+
+    /*
     private void OnTriggerEnter(Collider other)
     {
         if (HasDeducted) return;
@@ -108,7 +111,7 @@ public class WandFlashbang : MonoBehaviour
             }
         }
     }
-
+    */
     #region Wrongly put script (raycast should be in WandRaycast not in the Flashbang)
     /*
     void Update()

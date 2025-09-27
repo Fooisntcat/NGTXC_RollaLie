@@ -4,15 +4,12 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - Flashbang
   - Table
-  - P1Wand
-  - DiceThrower
-  - dice
-  - Hand
   - PumpNDump
-  - p1Hand
+  - diceReroll
   - p2Hand
+  - p1Hand
+  - Flashbang
   layers:
   - Default
   - TransparentFX
@@ -20,11 +17,11 @@ TagManager:
   - 
   - Water
   - UI
-  - Flashbang
   - Hand
+  - P1UI
+  - P2UI
+  - dice
   - 
-  - 
-  - Post-processing Volumes
   - 
   - 
   - 
