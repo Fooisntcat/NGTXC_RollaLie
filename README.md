@@ -2,7 +2,7 @@
 
 
 # How To Play:
-1. Go to Releases and download the latest version of the Build.zip file
+1. Go to [Releases](https://github.com/Fooisntcat/NGTXC_RollaLie/releases) and download the latest version of the Build.zip file
 2. Extract the .zip
 3. Run the .exe
 4. Have fun!
